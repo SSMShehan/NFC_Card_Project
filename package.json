@@ -1,0 +1,30 @@
+{
+  "name": "nexus-nfc-ecosystem",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NEXUS — P2P NFC Digital Business Card Ecosystem Monorepo",
+  "workspaces": [
+    "packages/backend",
+    "packages/web",
+    "packages/mobile"
+  ],
+  "scripts": {
+    "dev:backend": "npm run dev --workspace=packages/backend",
+    "dev:web": "npm run dev --workspace=packages/web",
+    "build:backend": "npm run build --workspace=packages/backend",
+    "build:web": "npm run build --workspace=packages/web",
+    "db:generate": "npm run db:generate --workspace=packages/backend",
+    "db:push": "npm run db:push --workspace=packages/backend",
+    "db:seed": "npm run db:seed --workspace=packages/backend",
+    "db:studio": "npm run db:studio --workspace=packages/backend",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "keywords": ["nfc", "digital-business-card", "nexus"],
+  "author": "NEXUS Team",
+  "license": "MIT"
+}
