@@ -1,6 +1,6 @@
 // ============================================================
 //  NEXUS — Prisma Schema
-//  Database: SQLite (Temporary for local viewing)
+//  Database: PostgreSQL (Supabase)
 //  ORM:      Prisma 5
 // ============================================================
 
@@ -9,8 +9,31 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ============================================================
+//  ENUMS
+// ============================================================
+
+enum SubscriptionTier {
+  FREE
+  PREMIUM
+  CORPORATE
+}
+
+enum ProfileStatus {
+  ACTIVE
+  SUSPENDED
+  STEALTH
+}
+
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 // ============================================================
@@ -19,10 +42,10 @@ datasource db {
 
 /// Core authentication entity. One-to-one with Profile.
 model User {
-  id               String   @id @default(cuid())
-  email            String   @unique
+  id               String           @id @default(cuid())
+  email            String           @unique
   passwordHash     String
-  subscriptionTier String   @default("FREE")
+  subscriptionTier SubscriptionTier @default(FREE)
 
   // Relations
   profile Profile?
@@ -37,8 +60,8 @@ model User {
 /// Public-facing profile data tied to a single User.
 /// Contains all information displayed on the NFC tap landing page.
 model Profile {
-  id             String  @id @default(cuid())
-  username       String  @unique
+  id             String        @id @default(cuid())
+  username       String        @unique
   displayName    String  
   bio            String? 
   phone          String? 
@@ -48,7 +71,7 @@ model Profile {
   website        String? 
   profilePicture String? // URL to hosted image
   companyLogo    String? // URL to hosted company logo
-  status         String  @default("ACTIVE")
+  status         ProfileStatus @default(ACTIVE)
 
   /// Total number of times the NFC card has been tapped (profile viewed)
   tapCount Int @default(0)
@@ -94,10 +117,10 @@ model Link {
 /// These fields bypass direct DB writes and instead create a VerificationRequest
 /// that must be approved (by AI or manually) before going live.
 model VerificationRequest {
-  id             String  @id @default(cuid())
-  fieldName      String  // e.g. "displayName", "profilePicture"
-  newValue       String  // The proposed new value (URL or text)
-  status         String  @default("PENDING")
+  id             String             @id @default(cuid())
+  fieldName      String             // e.g. "displayName", "profilePicture"
+  newValue       String             // The proposed new value (URL or text)
+  status         VerificationStatus @default(PENDING)
   moderationNote String? // AI confidence score or reviewer note
 
   // Ownership — many:1 with Profile
