@@ -4,10 +4,11 @@
 
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { Home } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Profile Not Found | NEXUS',
-  description: 'The NEXUS digital business card you are looking for does not exist.',
+  title: 'Profile Not Found | TAGIT',
+  description: 'The TAGIT digital business card you are looking for does not exist.',
 };
 
 export default function NotFound() {
@@ -25,21 +26,24 @@ export default function NotFound() {
 
         <div>
           <h1 className="text-xl font-bold text-white/90 mb-2">Card Not Found</h1>
-          <p className="text-sm text-white/50 leading-relaxed">
-            We couldn&apos;t find a NEXUS card at this address. It may have been removed or the link might be incorrect.
+          <p className="text-slate-400 max-w-sm mx-auto text-lg">
+            We couldn&apos;t find a TAGIT card at this address. It may have been removed or the link might be incorrect.
           </p>
         </div>
 
-        <Link
+        <Link 
           href="/"
-          className="btn-cta px-8 py-3 rounded-xl font-semibold text-white text-sm"
+          className="btn-cta inline-flex items-center gap-2 px-8 py-4 rounded-full text-white font-semibold shadow-glow"
         >
-          Back to NEXUS
+          <Home className="w-5 h-5" />
+          Back to TAGIT
         </Link>
 
         <div className="pt-4 border-t border-white/10 w-full flex flex-col items-center gap-2">
-          <p className="text-xs text-white/30">Powered by</p>
-          <span className="gradient-text text-lg font-black tracking-wider">NEXUS</span>
+          <div className="flex items-center gap-2">
+            <SmartphoneNfc className="w-5 h-5 text-slate-500" />
+            <span className="gradient-text text-lg font-black tracking-wider">TAGIT</span>
+          </div>
         </div>
       </div>
     </main>
