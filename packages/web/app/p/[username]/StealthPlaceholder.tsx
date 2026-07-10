@@ -77,11 +77,11 @@ export function StealthPlaceholder({ isSuspended = false }: StealthPlaceholderPr
           </p>
         </div>
 
-        {/* NEXUS Branding */}
+        {/* TAGIT Branding */}
         <div className="mt-2 pt-6 border-t border-white/10 w-full flex flex-col items-center gap-2">
           <p className="text-xs text-white/30">Powered by</p>
           <span className="gradient-text text-lg font-black tracking-wider">
-            NEXUS
+            TAGIT
           </span>
         </div>
       </div>

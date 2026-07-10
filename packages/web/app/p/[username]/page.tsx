@@ -85,15 +85,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!profile || profile === 'stealth' || profile === 'suspended') {
     return {
-      title: 'Profile Not Available | NEXUS',
-      description: 'This NEXUS digital business card profile is not currently available.',
+      title: 'Profile Not Available | TAGIT',
+      description: 'This TAGIT digital business card profile is not currently available.',
     };
   }
 
-  const title = `${profile.displayName} — NEXUS Digital Card`;
+  const title = `${profile.displayName} — TAGIT Digital Card`;
   const description = profile.bio
-    ? profile.bio
-    : `Connect with ${profile.displayName}${profile.company ? ` from ${profile.company}` : ''} via NEXUS NFC Business Card.`;
+    ? `${profile.bio.substring(0, 150)}${profile.bio.length > 150 ? '...' : ''}`
+    : `Connect with ${profile.displayName}${profile.company ? ` from ${profile.company}` : ''} via TAGIT NFC Business Card.`;
 
   return {
     title,

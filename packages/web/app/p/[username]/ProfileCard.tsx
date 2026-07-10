@@ -271,14 +271,14 @@ export function ProfileCard({ profile, apiUrl }: ProfileCardProps) {
         </div>
       </article>
 
-      {/* ── NEXUS Branding Footer ──────────────────────────── */}
+      {/* ── TAGIT Branding Footer ──────────────────────────── */}
       <footer
         className="mt-8 flex flex-col items-center gap-1 animate-fade-in"
         style={{ animationDelay: '0.7s' }}
       >
         <p className="text-xs text-white/25">Powered by</p>
         <span className="gradient-text text-sm font-black tracking-widest">
-          NEXUS CARDS
+          TAGIT
         </span>
       </footer>
     </main>

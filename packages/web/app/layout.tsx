@@ -15,17 +15,17 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | NEXUS Cards',
-    default: 'NEXUS — Digital NFC Business Cards',
+    template: '%s | TAGIT Cards',
+    default: 'TAGIT — Digital NFC Business Cards',
   },
   description:
     'Premium NFC digital business cards. Tap, connect, share. Instant contact sharing with a single tap.',
-  keywords: ['NFC card', 'digital business card', 'contact sharing', 'NEXUS'],
-  authors: [{ name: 'NEXUS' }],
+  keywords: ['NFC card', 'digital business card', 'contact sharing', 'TAGIT'],
+  authors: [{ name: 'TAGIT' }],
   robots: 'index, follow',
   openGraph: {
     type: 'website',
-    siteName: 'NEXUS Cards',
+    siteName: 'TAGIT Cards',
   },
 };
 
