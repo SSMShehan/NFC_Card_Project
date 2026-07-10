@@ -36,6 +36,28 @@ enum VerificationStatus {
   REJECTED
 }
 
+enum LinkPlatform {
+  CUSTOM
+  LINKEDIN
+  GITHUB
+  TWITTER
+  INSTAGRAM
+  FACEBOOK
+  YOUTUBE
+  TIKTOK
+  WHATSAPP
+  TELEGRAM
+  WEBSITE
+  PORTFOLIO
+  BEHANCE
+  DRIBBBLE
+  MEDIUM
+  SUBSTACK
+  CALENDLY
+  EMAIL
+  PHONE
+}
+
 // ============================================================
 //  MODELS
 // ============================================================
@@ -94,8 +116,8 @@ model Profile {
 /// Social or portfolio link associated with a profile.
 /// isActive controls real-time visibility without deleting the record.
 model Link {
-  id        String  @id @default(cuid())
-  platform  String  @default("CUSTOM")
+  id        String       @id @default(cuid())
+  platform  LinkPlatform @default(CUSTOM)
   url       String  
   label     String  
   iconType  String? // Optional override for custom icon key
