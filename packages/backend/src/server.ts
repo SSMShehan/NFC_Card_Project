@@ -1,5 +1,5 @@
 // ============================================================
-//  NEXUS — Express Server Bootstrap
+//  TAGIT — Express Server Bootstrap
 //  Entry point: src/server.ts
 // ============================================================
 
@@ -76,7 +76,7 @@ app.use('/api', limiter);
 app.get('/health', (_req, res) => {
   res.json({
     status: 'healthy',
-    service: 'NEXUS Backend API',
+    service: 'TAGIT Backend API',
     version: '1.0.0',
     timestamp: new Date().toISOString(),
     environment: NODE_ENV,
@@ -105,7 +105,7 @@ async function startServer(): Promise<void> {
     console.log('✅ Database connected (Supabase / PostgreSQL)');
 
     app.listen(PORT, () => {
-      console.log(`🚀 NEXUS API running on http://localhost:${PORT}`);
+      console.log(`🚀 TAGIT API running on http://localhost:${PORT}`);
       console.log(`🌍 Environment: ${NODE_ENV}`);
       console.log(`📋 Health check: http://localhost:${PORT}/health`);
     });

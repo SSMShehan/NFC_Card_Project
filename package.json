@@ -1,8 +1,8 @@
 {
-  "name": "nexus-nfc-ecosystem",
+  "name": "tagit-nfc-ecosystem",
   "version": "1.0.0",
   "private": true,
-  "description": "NEXUS — P2P NFC Digital Business Card Ecosystem Monorepo",
+  "description": "TAGIT — P2P NFC Digital Business Card Ecosystem Monorepo",
   "workspaces": [
     "packages/backend",
     "packages/web",
@@ -24,7 +24,7 @@
     "node": ">=20.0.0",
     "npm": ">=10.0.0"
   },
-  "keywords": ["nfc", "digital-business-card", "nexus"],
-  "author": "NEXUS Team",
+  "keywords": ["nfc", "digital-business-card", "tagit"],
+  "author": "TAGIT Team",
   "license": "MIT"
 }

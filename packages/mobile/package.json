@@ -1,8 +1,8 @@
 {
-  "name": "@nexus/mobile",
+  "name": "@tagit/mobile",
   "version": "1.0.0",
   "private": true,
-  "description": "NEXUS Mobile Dashboard — React Native / Expo",
+  "description": "TAGIT Mobile Dashboard — React Native / Expo",
   "main": "expo-router/entry",
   "scripts": {
     "start":    "expo start",

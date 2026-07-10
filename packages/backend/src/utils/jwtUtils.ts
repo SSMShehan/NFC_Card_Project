@@ -1,5 +1,5 @@
 // ============================================================
-//  NEXUS — JWT Utility Helpers
+//  TAGIT — JWT Utility Helpers
 // ============================================================
 
 import jwt from 'jsonwebtoken';
@@ -23,8 +23,8 @@ const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN ?? '30d';
 export function signAccessToken(payload: JwtPayload): string {
   return jwt.sign(payload, JWT_SECRET, {
     expiresIn: JWT_EXPIRES_IN,
-    issuer: 'nexus-api',
-    audience: 'nexus-client',
+    issuer: 'tagit-api',
+    audience: 'tagit-client',
   } as jwt.SignOptions);
 }
 
@@ -35,8 +35,8 @@ export function signAccessToken(payload: JwtPayload): string {
 export function signRefreshToken(userId: string): string {
   return jwt.sign({ userId }, JWT_SECRET, {
     expiresIn: JWT_REFRESH_EXPIRES_IN,
-    issuer: 'nexus-api',
-    audience: 'nexus-refresh',
+    issuer: 'tagit-api',
+    audience: 'tagit-refresh',
   } as jwt.SignOptions);
 }
 
@@ -46,8 +46,8 @@ export function signRefreshToken(userId: string): string {
  */
 export function verifyAccessToken(token: string): JwtPayload {
   return jwt.verify(token, JWT_SECRET, {
-    issuer: 'nexus-api',
-    audience: 'nexus-client',
+    issuer: 'tagit-api',
+    audience: 'tagit-client',
   }) as JwtPayload;
 }
 
@@ -56,7 +56,7 @@ export function verifyAccessToken(token: string): JwtPayload {
  */
 export function verifyRefreshToken(token: string): { userId: string } {
   return jwt.verify(token, JWT_SECRET, {
-    issuer: 'nexus-api',
-    audience: 'nexus-refresh',
+    issuer: 'tagit-api',
+    audience: 'tagit-refresh',
   }) as { userId: string };
 }

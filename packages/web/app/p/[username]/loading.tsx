@@ -1,5 +1,5 @@
 // ============================================================
-//  NEXUS — Profile Page Skeleton Loading State
+//  TAGIT — Profile Page Skeleton Loading State
 //  Shown by Next.js Suspense while the server component fetches data.
 // ============================================================
 

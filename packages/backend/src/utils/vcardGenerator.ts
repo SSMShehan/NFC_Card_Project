@@ -1,5 +1,5 @@
 // ============================================================
-//  NEXUS — vCard (VCF) Generator
+//  TAGIT — vCard (VCF) Generator
 //  Converts a Profile record into a RFC 6350 compliant VCF buffer
 //  that mobile browsers can save directly to their contacts app.
 // ============================================================
@@ -21,7 +21,7 @@ function vcfEscape(value: string): string {
 }
 
 /**
- * Generates a VCF 3.0 formatted string from a NEXUS profile.
+ * Generates a VCF 3.0 formatted string from a TAGIT profile.
  * Includes name, org, title, phone, email, website, photo URL,
  * and all active social/portfolio links as X-SOCIALPROFILE entries.
  *
@@ -96,7 +96,7 @@ export function generateVCard(profile: ProfileWithLinks): string {
   }
 
   // Metadata
-  lines.push(`X-NEXUS-USERNAME:${profile.username}`);
+  lines.push(`X-TAGIT-USERNAME:${profile.username}`);
   lines.push(`REV:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z`);
   lines.push('END:VCARD');
 
