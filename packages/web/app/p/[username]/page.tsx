@@ -141,7 +141,7 @@ export default async function ProfilePage({ params }: PageProps) {
   // ACTIVE — render full glassmorphism card
   return (
     <ProfileCard
-      profile={profile}
+      profile={profile as any}
       apiUrl={API_URL}
     />
   );
