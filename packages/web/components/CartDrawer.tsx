@@ -208,7 +208,15 @@ export function CartDrawer() {
                   <span>Shipping calculated at checkout</span>
                 </div>
 
-                <button className="w-full py-4 rounded-2xl bg-gradient-to-r from-rose-500 via-orange-500 to-amber-500 text-white font-extrabold text-base shadow-xl shadow-rose-500/30 hover:shadow-rose-500/50 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2">
+                <button 
+                  onClick={() => {
+                    closeCart();
+                    if (items.length > 0) {
+                      window.location.href = `/order?id=${items[0].id}`;
+                    }
+                  }}
+                  className="w-full py-4 rounded-2xl bg-gradient-to-r from-rose-500 via-orange-500 to-amber-500 text-white font-extrabold text-base shadow-xl shadow-rose-500/30 hover:shadow-rose-500/50 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2"
+                >
                   Proceed to Checkout
                   <ArrowRight className="w-5 h-5" />
                 </button>
