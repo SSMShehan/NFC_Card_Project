@@ -76,6 +76,14 @@ export function NavbarAuthButtons() {
                 </Link>
               )}
               <Link
+                href="/customize"
+                onClick={() => setDropdownOpen(false)}
+                className="flex items-center gap-2.5 px-4 py-2 text-sm hover:bg-neutral-50 hover:text-rose-600 transition-colors"
+              >
+                <span className="text-neutral-400">🎨</span>
+                Customize Profile
+              </Link>
+              <Link
                 href="/products"
                 onClick={() => setDropdownOpen(false)}
                 className="flex items-center gap-2.5 px-4 py-2 text-sm hover:bg-neutral-50 hover:text-rose-600 transition-colors"
