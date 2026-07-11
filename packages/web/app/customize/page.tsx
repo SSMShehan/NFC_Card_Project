@@ -1,6 +1,6 @@
-import React from "react";
+import React, { Suspense } from "react";
 import Link from "next/link";
-import { SmartphoneNfc, ArrowLeft } from "lucide-react";
+import { SmartphoneNfc, ArrowLeft, Loader2 } from "lucide-react";
 import ThreeDCardCustomizer from "@/components/ThreeDCardCustomizer";
 
 export const metadata = {
@@ -10,13 +10,13 @@ export const metadata = {
 
 export default function CustomizePage() {
   return (
-    <div className="min-h-screen bg-neutral-50 text-neutral-950 flex flex-col font-sans relative overflow-hidden">
+    <div className="h-screen bg-neutral-50 text-neutral-950 flex flex-col font-sans relative overflow-hidden">
       {/* Light Theme ambient glow */}
       <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-rose-500/10 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-20%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-orange-500/10 blur-[120px] pointer-events-none" />
 
       {/* ── Light Premium Navbar ── */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-2xl border-b border-neutral-200">
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-2xl border-b border-neutral-200 shrink-0">
         <div className="max-w-[1600px] mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-8">
             <Link 
@@ -51,8 +51,10 @@ export default function CustomizePage() {
       </header>
 
       {/* ── 3D Customizer Interface ── */}
-      <main className="flex-grow flex items-center justify-center">
-        <ThreeDCardCustomizer />
+      <main className="flex-1 flex min-h-0 w-full">
+        <Suspense fallback={<div className="w-full h-full flex items-center justify-center"><Loader2 className="w-8 h-8 text-neutral-400 animate-spin" /></div>}>
+          <ThreeDCardCustomizer />
+        </Suspense>
       </main>
     </div>
   );
