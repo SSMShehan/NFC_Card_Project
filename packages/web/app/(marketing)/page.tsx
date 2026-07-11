@@ -1,9 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Smartphone, Zap, Share2, CheckCircle, SmartphoneNfc, CreditCard, Globe2 } from "lucide-react";
+import { ArrowRight, Smartphone, Zap, Share2, CheckCircle, SmartphoneNfc, CreditCard, Globe2, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { useTheme } from "../../context/ThemeContext";
+import { useCart } from "../../context/CartContext";
 
 // Reusable animation variants
 const fadeUpVariant = {
@@ -23,6 +24,7 @@ const staggerContainer = {
 
 export default function LandingPage() {
   const { isLight } = useTheme();
+  const { addItem } = useCart();
 
   return (
     <>
@@ -58,14 +60,25 @@ export default function LandingPage() {
             </motion.p>
 
             <motion.div variants={fadeUpVariant} className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-              <button className="w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-rose-500 to-orange-500 text-white font-semibold text-lg hover:shadow-lg hover:shadow-rose-500/25 transition-all hover:-translate-y-1 flex items-center justify-center gap-2">
-                Order Now <ArrowRight className="w-5 h-5" />
+              <button
+                onClick={() => addItem({
+                  id: "card-matte-black",
+                  name: "TAGIT Matte Black",
+                  price: "LKR 4,500 one-time",
+                  priceNum: 4500,
+                  type: "card",
+                  badge: "POPULAR",
+                })}
+                className="w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-rose-500 to-orange-500 text-white font-semibold text-lg hover:shadow-lg hover:shadow-rose-500/25 transition-all hover:-translate-y-1 flex items-center justify-center gap-2"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                Add to Cart
               </button>
-              <button className={`w-full sm:w-auto px-8 py-4 rounded-full font-semibold text-lg border transition-all flex items-center justify-center gap-2 ${
+              <Link href="/products" className={`w-full sm:w-auto px-8 py-4 rounded-full font-semibold text-lg border transition-all flex items-center justify-center gap-2 ${
                 isLight ? "bg-white text-neutral-600 border-neutral-200 hover:border-rose-200 hover:bg-rose-50" : "bg-white/5 text-neutral-200 border-white/10 hover:border-rose-500/30 hover:bg-white/10"
               }`}>
-                View Demo
-              </button>
+                View All Cards <ArrowRight className="w-5 h-5" />
+              </Link>
             </motion.div>
 
             <motion.div variants={fadeUpVariant} className="mt-10 flex items-center justify-center lg:justify-start gap-6 text-neutral-400 text-sm font-medium">
@@ -300,7 +313,18 @@ export default function LandingPage() {
             <div className="relative z-10 max-w-2xl mx-auto">
               <h2 className="text-3xl md:text-5xl font-black text-white mb-6 leading-tight tracking-tight drop-shadow-md">Ready to upgrade your networking game?</h2>
               <p className="text-neutral-200 text-lg mb-10 font-normal leading-relaxed">Join thousands of professionals who have already ditched paper cards and stepped into the future.</p>
-              <button className="px-10 py-5 rounded-full bg-gradient-to-r from-rose-500 via-orange-500 to-amber-500 text-white font-extrabold text-lg shadow-lg shadow-rose-500/30 hover:shadow-rose-500/50 hover:scale-105 transition-all duration-300">
+              <button
+                onClick={() => addItem({
+                  id: "card-matte-black",
+                  name: "TAGIT Matte Black",
+                  price: "LKR 4,500 one-time",
+                  priceNum: 4500,
+                  type: "card",
+                  badge: "POPULAR",
+                })}
+                className="px-10 py-5 rounded-full bg-gradient-to-r from-rose-500 via-orange-500 to-amber-500 text-white font-extrabold text-lg shadow-lg shadow-rose-500/30 hover:shadow-rose-500/50 hover:scale-105 transition-all duration-300 flex items-center gap-3 mx-auto"
+              >
+                <ShoppingCart className="w-5 h-5" />
                 Order Your Card Now
               </button>
             </div>

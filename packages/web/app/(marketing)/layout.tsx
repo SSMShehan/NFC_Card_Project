@@ -1,10 +1,12 @@
 "use client";
 
-import { SmartphoneNfc } from "lucide-react";
+import { ShoppingCart, SmartphoneNfc } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
+import { CartDrawer } from "../../components/CartDrawer";
 import { NavbarAuthButtons } from "../../components/NavbarAuthButtons";
+import { useCart } from "../../context/CartContext";
 import { useTheme } from "../../context/ThemeContext";
 
 export default function MarketingLayout({
@@ -14,6 +16,7 @@ export default function MarketingLayout({
 }) {
   const { isLight } = useTheme();
   const pathname = usePathname();
+  const { totalItems, openCart } = useCart();
 
   const navLinks = [
     { href: "/products", label: "Cards" },
@@ -145,8 +148,24 @@ export default function MarketingLayout({
             </Link>
           </nav>
 
-          {/* Auth Buttons */}
-          <div className="shrink-0">
+          {/* Cart Icon + Auth Buttons */}
+          <div className="shrink-0 flex items-center gap-2">
+            <button
+              onClick={openCart}
+              className={`relative p-2.5 rounded-full border transition-all flex items-center justify-center group ${
+                isLight
+                  ? "bg-neutral-100 hover:bg-neutral-200 border-neutral-300 text-neutral-700 hover:scale-105"
+                  : "bg-white/[0.06] hover:bg-white/[0.12] border-white/15 text-neutral-300 hover:text-white hover:scale-105"
+              }`}
+              aria-label="Open cart"
+            >
+              <ShoppingCart className="w-4 h-4" />
+              {totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-gradient-to-br from-rose-500 to-orange-500 text-white text-[10px] font-black flex items-center justify-center shadow-md shadow-rose-500/40">
+                  {totalItems > 9 ? "9+" : totalItems}
+                </span>
+              )}
+            </button>
             <NavbarAuthButtons />
           </div>
         </div>
@@ -154,6 +173,9 @@ export default function MarketingLayout({
 
       {/* Page Content */}
       <div className="pt-20">{children}</div>
+
+      {/* Cart Drawer */}
+      <CartDrawer />
 
       {/* ── Footer ── */}
       <footer
