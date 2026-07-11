@@ -146,12 +146,12 @@ export default function OrderPage() {
             {STEPS.map((step, idx) => (
               <React.Fragment key={step}>
                 <div className="flex flex-col items-center gap-1.5">
-                  <div className={w-8 h-8 rounded-full flex items-center justify-center text-xs font-black border-2 transition-all }>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black border-2 transition-all ${idx < 3 ? "bg-neutral-900 border-neutral-900 text-white" : "border-neutral-300 text-neutral-400"}`}>
                     {idx < 2 ? <CheckCircle className="w-4 h-4" /> : idx + 1}
                   </div>
-                  <span className={	ext-[10px] font-black uppercase tracking-wider }>{step}</span>
+                  <span className={`text-[10px] font-black uppercase tracking-wider ${idx < 3 ? "text-neutral-900" : "text-neutral-300"}`}>{step}</span>
                 </div>
-                {idx < STEPS.length - 1 && <div className={h-0.5 w-16 mx-2 mb-4 rounded-full transition-all } />}
+                {idx < STEPS.length - 1 && <div className={`h-0.5 w-16 mx-2 mb-4 rounded-full transition-all ${idx < 2 ? "bg-neutral-900" : "bg-neutral-200"}`} />}
               </React.Fragment>
             ))}
           </div>
@@ -189,18 +189,18 @@ export default function OrderPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {([{ id: "delivery", label: "Home Delivery", desc: freeDelivery ? "Free (5+ cards)" : "+ LKR 300", icon: Truck, highlight: freeDelivery }, { id: "pickup", label: "Pick Up In Store", desc: "Free — Colombo 07", icon: Store, highlight: false }] as const).map(opt => (
-                  <button key={opt.id} type="button" onClick={() => setDelivery(opt.id)} className={elative p-6 rounded-[1.5rem] border-2 text-left transition-all }>
+                  <button key={opt.id} type="button" onClick={() => setDelivery(opt.id)} className={`relative p-6 rounded-[1.5rem] border-2 text-left transition-all ${delivery === opt.id ? "border-neutral-900 bg-neutral-900 text-white shadow-2xl shadow-neutral-900/20" : "border-neutral-200 hover:border-neutral-400"}`}>
                     {opt.highlight && delivery !== opt.id && <span className="absolute -top-3 left-4 bg-emerald-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">Free!</span>}
-                    <opt.icon className={w-7 h-7 mb-3 } />
-                    <p className={ont-black text-base }>{opt.label}</p>
-                    <p className={	ext-sm font-bold mt-1 }>{opt.desc}</p>
+                    <opt.icon className={`w-7 h-7 mb-3 ${delivery === opt.id ? "text-white" : "text-neutral-400"}`} />
+                    <p className={`font-black text-base ${delivery === opt.id ? "text-white" : "text-neutral-900"}`}>{opt.label}</p>
+                    <p className={`text-sm font-bold mt-1 ${delivery === opt.id ? "text-white/70" : opt.highlight ? "text-emerald-600" : "text-neutral-400"}`}>{opt.desc}</p>
                   </button>
                 ))}
               </div>
               <div className="mt-8 flex items-center justify-between p-6 bg-neutral-50 rounded-2xl border border-neutral-100">
                 <div>
                   <p className="font-black text-neutral-900">Quantity</p>
-                  <p className="text-neutral-500 text-sm font-medium">{quantity < 5 ? ${5 - quantity} more for free delivery! : "Free delivery unlocked! 🎉"}</p>
+                  <p className="text-neutral-500 text-sm font-medium">{quantity < 5 ? `${5 - quantity} more for free delivery!` : "Free delivery unlocked! 🎉"}</p>
                 </div>
                 <div className="flex items-center gap-4">
                   <button type="button" onClick={() => setQuantity(q => Math.max(1, q - 1))} className="w-10 h-10 rounded-full bg-white border-2 border-neutral-200 hover:border-neutral-900 flex items-center justify-center transition-all shadow-sm"><Minus className="w-4 h-4 text-neutral-600" /></button>
@@ -219,11 +219,11 @@ export default function OrderPage() {
                 {PAYMENT_METHODS.map(pm => {
                   const isDisabled = pm.id === "cod" && delivery === "pickup";
                   return (
-                    <button key={pm.id} type="button" disabled={isDisabled} onClick={() => !isDisabled && setPaymentMethod(pm.id)} className={elative p-5 rounded-[1.5rem] border-2 text-left transition-all }>
-                      {pm.badge && <span className={bsolute -top-3 right-4 text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider }>{pm.badge}</span>}
-                      <pm.icon className={w-6 h-6 mb-3 } />
-                      <p className={ont-black text-sm }>{pm.label}</p>
-                      <p className={	ext-xs font-medium mt-0.5 }>{pm.desc}</p>
+                    <button key={pm.id} type="button" disabled={isDisabled} onClick={() => !isDisabled && setPaymentMethod(pm.id)} className={`relative p-5 rounded-[1.5rem] border-2 text-left transition-all ${isDisabled ? "opacity-40 cursor-not-allowed border-neutral-100" : paymentMethod === pm.id ? "border-neutral-900 bg-neutral-900 text-white shadow-xl shadow-neutral-900/20" : "border-neutral-200 hover:border-neutral-400"}`}>
+                      {pm.badge && <span className={`absolute -top-3 right-4 text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider ${pm.badge === "Popular" ? "bg-rose-500 text-white" : "bg-amber-400 text-amber-900"}`}>{pm.badge}</span>}
+                      <pm.icon className={`w-6 h-6 mb-3 ${paymentMethod === pm.id ? "text-white" : "text-neutral-500"}`} />
+                      <p className={`font-black text-sm ${paymentMethod === pm.id ? "text-white" : "text-neutral-900"}`}>{pm.label}</p>
+                      <p className={`text-xs font-medium mt-0.5 ${paymentMethod === pm.id ? "text-white/60" : "text-neutral-400"}`}>{pm.desc}</p>
                     </button>
                   );
                 })}
