@@ -878,63 +878,68 @@ export default function ThreeDCardCustomizer() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
-                className="flex flex-col h-full min-h-0 p-6 lg:p-10"
+                className="flex flex-col h-full min-h-0"
               >
-                <div className="flex items-center gap-4 mb-10 shrink-0">
-                  <button onClick={() => setIsCheckoutMode(false)} className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center hover:bg-neutral-200 transition-colors">
-                    <svg className="w-5 h-5 text-neutral-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                <div className="p-6 lg:p-8 pb-4 shrink-0 flex items-center justify-between border-b border-neutral-900/5">
+                  <h2 className="text-3xl font-black text-neutral-900 tracking-tight">Order Summary</h2>
+                  <button onClick={() => setIsCheckoutMode(false)} className="w-10 h-10 rounded-full bg-neutral-900/5 flex items-center justify-center hover:bg-neutral-900/10 transition-colors">
+                    <svg className="w-5 h-5 text-neutral-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
                   </button>
-                  <h2 className="text-4xl font-black text-neutral-900 tracking-tight">Order Summary</h2>
                 </div>
 
-                <div className="flex-1 overflow-y-auto scrollbar-hide pb-10 space-y-6">
-                  <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-neutral-900/5 space-y-6">
-                    <div className="flex justify-between items-center">
+                <div className="flex-1 p-6 lg:p-8 overflow-y-auto flex flex-col justify-center space-y-6">
+                  {/* Premium Receipt Card */}
+                  <div className="bg-white rounded-[2rem] p-8 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] border border-neutral-900/5 relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-neutral-900 to-neutral-700"></div>
+                    
+                    <div className="flex justify-between items-start mb-6">
                       <div className="flex flex-col">
-                        <span className="text-neutral-900 font-bold text-lg">{productName}</span>
-                        <span className="text-neutral-500 text-sm font-medium">Base Card</span>
+                        <span className="text-neutral-900 font-black text-xl tracking-tight">{productName}</span>
+                        <span className="text-neutral-500 text-xs font-bold uppercase tracking-widest mt-1">Premium NFC Card</span>
                       </div>
-                      <span className="font-bold text-lg text-neutral-900">LKR {basePrice.toLocaleString()}</span>
+                      <span className="font-black text-lg text-neutral-900">LKR {basePrice.toLocaleString()}</span>
                     </div>
+
                     {customBgPrice > 0 && (
-                      <div className="flex justify-between items-center">
+                      <div className="flex justify-between items-center mb-6 p-4 rounded-2xl bg-neutral-900/5 border border-neutral-900/5">
                         <div className="flex flex-col">
-                          <span className="text-neutral-900 font-bold text-lg">Custom Background</span>
-                          <span className="text-neutral-500 text-sm font-medium">Add-on</span>
+                          <span className="text-neutral-900 font-bold text-sm">Custom Background</span>
+                          <span className="text-neutral-500 text-[10px] font-bold uppercase tracking-widest mt-0.5">Premium Add-on</span>
                         </div>
-                        <span className="font-bold text-lg text-neutral-900">LKR {customBgPrice.toLocaleString()}</span>
+                        <span className="font-bold text-sm text-neutral-900">LKR {customBgPrice.toLocaleString()}</span>
                       </div>
                     )}
                     
-                    <div className="w-full h-px bg-neutral-100 my-4"></div>
+                    <div className="w-full border-t border-dashed border-neutral-200 my-6"></div>
                     
                     <div className="flex justify-between items-end">
                       <div className="flex flex-col">
-                        <span className="text-neutral-500 font-bold uppercase tracking-widest text-xs mb-1">Total</span>
-                        <span className="text-neutral-900 font-black text-4xl tracking-tight">LKR {totalPrice.toLocaleString()}</span>
+                        <span className="text-neutral-400 font-black uppercase tracking-[0.2em] text-[10px] mb-1">Total Investment</span>
+                        <span className="text-neutral-900 font-black text-4xl tracking-tighter leading-none">LKR {totalPrice.toLocaleString()}</span>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="bg-emerald-50 rounded-2xl p-4 border border-emerald-100 flex items-start gap-4">
-                    <CheckCircle className="w-6 h-6 text-emerald-500 shrink-0" />
+                  {/* Value Prop */}
+                  <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-[2rem] p-6 text-white shadow-lg shadow-emerald-500/20 flex items-center gap-5">
+                    <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center shrink-0 backdrop-blur-md">
+                      <CheckCircle className="w-6 h-6 text-white" />
+                    </div>
                     <div>
-                      <h4 className="font-bold text-emerald-900 text-sm mb-1">Free Lifetime Access</h4>
-                      <p className="text-emerald-700 text-xs font-medium leading-relaxed">Your card includes our powerful digital profile software with absolutely zero monthly fees.</p>
+                      <h4 className="font-black text-sm tracking-wide mb-1">Free Lifetime Software</h4>
+                      <p className="text-emerald-50 text-xs font-medium leading-relaxed opacity-90">Includes powerful digital profile management with absolutely zero monthly fees forever.</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-auto shrink-0 space-y-4 pt-4 border-t border-neutral-900/5">
-                  <button onClick={handleBuyNow} className="w-full bg-neutral-900 hover:bg-black text-white py-5 rounded-[1.5rem] font-black tracking-widest uppercase text-sm transition-all shadow-xl hover:-translate-y-1 hover:shadow-2xl active:translate-y-0 flex items-center justify-center gap-3 group">
+                <div className="p-6 lg:p-8 pt-4 shrink-0 bg-white/80 backdrop-blur-xl border-t border-neutral-900/5 space-y-3">
+                  <button onClick={handleBuyNow} className="w-full bg-neutral-900 hover:bg-black text-white py-5 rounded-2xl font-black tracking-[0.15em] uppercase text-xs transition-all shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] active:translate-y-0 flex items-center justify-center gap-3 group relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
                     Buy Now
-                    <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                    <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                   </button>
-                  <button className="w-full bg-white border-2 border-neutral-200 hover:border-neutral-900 hover:bg-neutral-900 hover:text-white text-neutral-900 py-5 rounded-[1.5rem] font-black tracking-widest uppercase text-sm transition-all flex items-center justify-center gap-3">
+                  <button className="w-full bg-white border-2 border-neutral-200 hover:border-neutral-900 hover:bg-neutral-900 hover:text-white text-neutral-900 py-4 rounded-2xl font-black tracking-[0.15em] uppercase text-xs transition-all flex items-center justify-center gap-3">
                     Add to Cart
-                  </button>
-                  <button onClick={() => setIsCheckoutMode(false)} className="w-full text-neutral-400 hover:text-neutral-900 text-xs font-bold uppercase tracking-widest py-4 transition-colors">
-                    ← Edit Design
                   </button>
                 </div>
               </motion.div>
