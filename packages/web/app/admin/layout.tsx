@@ -348,14 +348,14 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
             </button>
 
             <Link
-              href="/customize"
+              href="/"
               className={`text-xs px-3.5 py-1.5 rounded-lg border transition-all font-medium ${
                 isLight
                   ? 'bg-neutral-100 hover:bg-neutral-200 border-neutral-300 text-neutral-800'
                   : 'bg-white/5 hover:bg-white/10 border-white/10 text-neutral-300 hover:text-white'
               }`}
             >
-              Back to App
+              Back to Home
             </Link>
           </div>
         </header>
