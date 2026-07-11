@@ -104,7 +104,7 @@ export default function MarketingLayout({
                 <Link
                   key={href}
                   href={href}
-                  className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 relative ${
+                  className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
                     active
                       ? isLight
                         ? "bg-white text-neutral-950 shadow-sm font-bold"
@@ -115,13 +115,6 @@ export default function MarketingLayout({
                   }`}
                 >
                   {label}
-                  {active && (
-                    <span
-                      className={`absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full ${
-                        isLight ? "bg-rose-500" : "bg-rose-400"
-                      }`}
-                    />
-                  )}
                 </Link>
               );
             })}
