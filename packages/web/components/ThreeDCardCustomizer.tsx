@@ -250,26 +250,63 @@ export default function ThreeDCardCustomizer() {
   const customBgPrice = bgImage ? 500 : 0;
   const totalPrice = basePrice + customBgPrice;
 
-  const handleBuyNow = () => {
-    const cardConfig = {
-      productName,
-      basePrice,
-      customBgPrice,
-      totalPrice,
-      foilColor: foil.value,
-      foilLabel: foil.label,
-      accentColor,
-      bgColor,
-      bgImage,
-      displayName,
-      designation,
-      email,
-      phone,
-      website,
-      fontStyle: fontStyle.label,
-    };
-    localStorage.setItem("tagit_order_config", JSON.stringify(cardConfig));
-    router.push("/order");
+  const [isSaving, setIsSaving] = useState(false);
+
+  const saveDesignToBackend = async (status: "CART" | "TEMPORARY") => {
+    setIsSaving(true);
+    try {
+      const cardConfig = {
+        productName,
+        basePrice,
+        customBgPrice,
+        totalPrice,
+        foilColor: foil.value,
+        foilLabel: foil.label,
+        accentColor,
+        bgColor,
+        bgImage,
+        displayName,
+        designation,
+        email,
+        phone,
+        website,
+        fontStyle: fontStyle.label,
+      };
+
+      const res = await fetch("http://localhost:4000/api/v1/designs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status, config: cardConfig }),
+      });
+
+      const data = await res.json();
+      if (data.success && data.design) {
+        return data.design.id;
+      } else {
+        throw new Error("Failed to save design");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong while saving your design. Please try again.");
+      return null;
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleBuyNow = async () => {
+    const designId = await saveDesignToBackend("TEMPORARY");
+    if (designId) {
+      router.push(`/order?id=${designId}`);
+    }
+  };
+
+  const handleAddToCart = async () => {
+    const designId = await saveDesignToBackend("CART");
+    if (designId) {
+      alert("Design added to cart! It will be saved for 3 days.");
+      setIsCheckoutMode(false);
+    }
   };
 
   return (
@@ -933,12 +970,12 @@ export default function ThreeDCardCustomizer() {
                 </div>
 
                 <div className="p-6 lg:p-8 pt-4 shrink-0 bg-white/80 backdrop-blur-xl border-t border-neutral-900/5 space-y-3">
-                  <button onClick={handleBuyNow} className="w-full bg-neutral-900 hover:bg-black text-white py-5 rounded-2xl font-black tracking-[0.15em] uppercase text-xs transition-all shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] active:translate-y-0 flex items-center justify-center gap-3 group relative overflow-hidden">
+                  <button onClick={handleBuyNow} disabled={isSaving} className="w-full bg-neutral-900 hover:bg-black disabled:bg-neutral-400 text-white py-5 rounded-2xl font-black tracking-[0.15em] uppercase text-xs transition-all shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] active:translate-y-0 flex items-center justify-center gap-3 group relative overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
-                    Buy Now
-                    <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                    {isSaving ? "Saving..." : "Buy Now"}
+                    {!isSaving && <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>}
                   </button>
-                  <button className="w-full bg-white border-2 border-neutral-200 hover:border-neutral-900 hover:bg-neutral-900 hover:text-white text-neutral-900 py-4 rounded-2xl font-black tracking-[0.15em] uppercase text-xs transition-all flex items-center justify-center gap-3">
+                  <button onClick={handleAddToCart} disabled={isSaving} className="w-full bg-white disabled:opacity-50 border-2 border-neutral-200 hover:border-neutral-900 hover:bg-neutral-900 hover:text-white text-neutral-900 py-4 rounded-2xl font-black tracking-[0.15em] uppercase text-xs transition-all flex items-center justify-center gap-3">
                     Add to Cart
                   </button>
                 </div>

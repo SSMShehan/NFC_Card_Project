@@ -56,9 +56,15 @@ function MiniCardPreview({ config }: { config: CardConfig }) {
   );
 }
 
-export default function OrderPage() {
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+
+function OrderPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [config, setConfig] = useState<CardConfig | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
   const [fullName, setFullName] = useState("");
@@ -77,15 +83,49 @@ export default function OrderPage() {
   const [bankRef, setBankRef] = useState("");
 
   useEffect(() => {
-    const saved = localStorage.getItem("tagit_order_config");
-    if (saved) {
-      const parsed = JSON.parse(saved) as CardConfig;
-      setConfig(parsed);
-      if (parsed.displayName !== "JOHN DOE") setFullName(parsed.displayName);
-      if (parsed.email !== "john@tagit.com") setEmail(parsed.email);
-      if (parsed.phone !== "+1 (555) 123-4567") setPhone(parsed.phone);
-    }
-  }, []);
+    const fetchDesign = async () => {
+      const id = searchParams.get("id");
+      if (!id) {
+        setError("No design ID provided. Please go back and finalize your design.");
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const res = await fetch(`http://localhost:4000/api/v1/designs/${id}`);
+        const data = await res.json();
+        
+        if (data.success && data.design) {
+          const parsed = data.design as CardConfig;
+          setConfig(parsed);
+          if (parsed.displayName !== "JOHN DOE") setFullName(parsed.displayName);
+          if (parsed.email !== "john@tagit.com") setEmail(parsed.email);
+          if (parsed.phone !== "+1 (555) 123-4567") setPhone(parsed.phone);
+        } else {
+          setError(data.message || "Failed to load design.");
+        }
+      } catch (err) {
+        setError("Failed to connect to the server.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDesign();
+  }, [searchParams]);
+
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center"><p className="text-neutral-500 font-bold animate-pulse">Loading your custom design...</p></div>;
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 space-y-4">
+        <p className="text-rose-500 font-bold">{error}</p>
+        <button onClick={() => router.push("/")} className="px-6 py-3 bg-neutral-900 text-white rounded-xl font-bold">Go Back to Studio</button>
+      </div>
+    );
+  }
 
   const basePrice = config?.basePrice ?? 2500;
   const customBgPrice = config?.customBgPrice ?? 0;
@@ -320,5 +360,13 @@ export default function OrderPage() {
         </div>
       </form>
     </div>
+  );
+}
+
+export default function OrderPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><p className="text-neutral-500 font-bold animate-pulse">Loading checkout...</p></div>}>
+      <OrderPageContent />
+    </Suspense>
   );
 }
