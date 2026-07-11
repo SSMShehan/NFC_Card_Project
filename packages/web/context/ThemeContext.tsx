@@ -27,25 +27,34 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const saved = localStorage.getItem("tagit_theme") as ThemeMode;
     if (saved === "dark") {
       setThemeState("dark");
-      document.documentElement.classList.add("dark");
     } else {
       // Strictly default to Light Mode
       setThemeState("light");
       localStorage.setItem("tagit_theme", "light");
-      document.documentElement.classList.remove("dark");
     }
   }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (theme === "dark") {
+        document.documentElement.classList.add("dark");
+        document.documentElement.style.backgroundColor = "#08080a";
+        document.body.style.backgroundColor = "#08080a";
+        document.body.style.color = "#f5f5f5";
+      } else {
+        document.documentElement.classList.remove("dark");
+        document.documentElement.style.backgroundColor = "#ffffff";
+        document.body.style.backgroundColor = "#ffffff";
+        document.body.style.color = "#0a0a0a";
+      }
+    }
+  }, [theme]);
 
   const toggleTheme = () => {
     const next = theme === "light" ? "dark" : "light";
     setThemeState(next);
     if (typeof window !== "undefined") {
       localStorage.setItem("tagit_theme", next);
-      if (next === "dark") {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
     }
   };
 
@@ -53,17 +62,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setThemeState(t);
     if (typeof window !== "undefined") {
       localStorage.setItem("tagit_theme", t);
-      if (t === "dark") {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
     }
   };
 
   return (
     <ThemeContext.Provider value={{ theme, isLight: theme === "light", toggleTheme, setTheme }}>
-      <div className={`min-h-screen transition-colors duration-300 ${theme === "dark" ? "bg-neutral-950 text-neutral-100 dark" : "bg-white text-neutral-950"}`}>
+      <div className={`min-h-screen transition-colors duration-300 ${theme === "dark" ? "bg-[#08080a] text-neutral-100 dark" : "bg-white text-neutral-950"}`}>
         {children}
       </div>
     </ThemeContext.Provider>

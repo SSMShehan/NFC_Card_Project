@@ -14,13 +14,38 @@ export default function MarketingLayout({
   const { isLight } = useTheme();
 
   return (
-    <div className={`relative z-10 min-h-screen font-sans overflow-hidden transition-colors duration-300 ${isLight ? "bg-white text-neutral-950" : "bg-neutral-950 text-neutral-100"}`}>
-      {/* Abstract light background gradients */}
-      <div className={`absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full blur-[120px] -z-10 animate-pulse-slow ${isLight ? "bg-rose-50" : "bg-rose-950/20"}`} />
-      <div className={`absolute top-[20%] right-[-10%] w-[40vw] h-[40vw] rounded-full blur-[120px] -z-10 animate-float ${isLight ? "bg-orange-50" : "bg-orange-950/20"}`} />
+    <div className={`relative z-10 min-h-screen font-sans overflow-hidden transition-colors duration-500 ${
+      isLight 
+        ? "bg-white text-neutral-950" 
+        : "bg-[#08080a] text-neutral-100 selection:bg-rose-500 selection:text-white"
+    }`}>
+      {/* Ambient background gradients & mesh */}
+      {isLight ? (
+        <>
+          <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full blur-[120px] -z-10 animate-pulse-slow bg-rose-50" />
+          <div className="absolute top-[20%] right-[-10%] w-[40vw] h-[40vw] rounded-full blur-[120px] -z-10 animate-float bg-orange-50" />
+        </>
+      ) : (
+        <>
+          {/* Deep Obsidian Rich Ambient Glows */}
+          <div className="absolute top-[-15%] left-[10%] w-[600px] h-[600px] rounded-full bg-gradient-to-br from-rose-600/20 via-orange-600/10 to-transparent blur-[140px] pointer-events-none -z-10 animate-pulse-slow" />
+          <div className="absolute top-[30%] right-[-10%] w-[500px] h-[500px] rounded-full bg-gradient-to-bl from-indigo-600/15 via-purple-600/10 to-transparent blur-[140px] pointer-events-none -z-10 animate-float" />
+          <div className="absolute bottom-[10%] left-[20%] w-[600px] h-[600px] rounded-full bg-gradient-to-tr from-rose-600/10 via-amber-600/10 to-transparent blur-[160px] pointer-events-none -z-10" />
+          {/* Subtle Cyber Grid Overlay for Rich Texture */}
+          <div className="absolute inset-0 bg-[radial-gradient(#ffffff0c_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none -z-10 opacity-70" />
+        </>
+      )}
 
       {/* ── Ultra-Premium Edge-to-Edge Glassmorphic Navbar ── */}
-      <header className={`fixed top-0 left-0 right-0 z-50 w-full backdrop-blur-2xl border-b transition-all ${isLight ? "bg-white/90 border-neutral-200/80 shadow-xs" : "bg-neutral-950/90 border-neutral-800/80 shadow-lg shadow-black/40"}`}>
+      <header className={`fixed top-0 left-0 right-0 z-50 w-full backdrop-blur-2xl transition-all duration-300 ${
+        isLight 
+          ? "bg-white/90 border-b border-neutral-200/80 shadow-xs" 
+          : "bg-[#090812]/80 border-b border-white/[0.12] shadow-[0_8px_32px_0_rgba(0,0,0,0.6)]"
+      }`}>
+        {/* Subtle Neon Bottom Edge Glow in Dark Mode */}
+        {!isLight && (
+          <div className="absolute bottom-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-rose-500/35 to-transparent pointer-events-none" />
+        )}
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between gap-4">
           
           {/* 1. Brand Logo Emblem (Icon Eke Idan) */}
@@ -46,23 +71,39 @@ export default function MarketingLayout({
             </div>
           </Link>
 
-          {/* 2. Center Interactive Navigation Pill Bar (Piliwelata Links) */}
-          <nav className={`hidden lg:flex items-center gap-1 p-1.5 rounded-full border shadow-inner text-xs font-bold transition-all ${isLight ? "bg-neutral-100/80 border-neutral-200/60 text-neutral-600" : "bg-white/5 border-white/10 text-neutral-300"}`}>
+          {/* 2. Center Nav Pills */}
+          <nav className={`hidden md:flex items-center gap-1.5 p-1.5 rounded-full border backdrop-blur-xl transition-all duration-300 ${
+            isLight
+              ? "bg-neutral-100/85 border-neutral-200/70 shadow-inner"
+              : "bg-gradient-to-r from-white/[0.08] via-white/[0.05] to-white/[0.08] border-white/15 shadow-[0_4px_25px_rgba(0,0,0,0.5)]"
+          }`}>
             <Link
               href="/products"
-              className={`px-4 py-2 rounded-full transition-all ${isLight ? "hover:bg-white hover:text-neutral-950 hover:shadow-sm" : "hover:bg-white/10 hover:text-white"}`}
+              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
+                isLight
+                  ? "text-neutral-700 hover:bg-white hover:text-neutral-950 hover:shadow-xs"
+                  : "text-neutral-300 hover:bg-white/[0.12] hover:text-white shadow-2xs"
+              }`}
             >
-              Products
+              Cards
             </Link>
             <Link
               href="/pricing"
-              className={`px-4 py-2 rounded-full transition-all ${isLight ? "hover:bg-white hover:text-neutral-950 hover:shadow-sm" : "hover:bg-white/10 hover:text-white"}`}
+              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
+                isLight
+                  ? "text-neutral-700 hover:bg-white hover:text-neutral-950 hover:shadow-xs"
+                  : "text-neutral-300 hover:bg-white/[0.12] hover:text-white shadow-2xs"
+              }`}
             >
               Pricing
             </Link>
             <Link
               href="/customize"
-              className={`px-4 py-2 rounded-full transition-all flex items-center gap-1.5 text-rose-600 group/nav ${isLight ? "hover:bg-white hover:text-rose-700 hover:shadow-sm" : "hover:bg-white/10 hover:text-rose-400"}`}
+              className={`px-4 py-2 rounded-full text-sm font-bold transition-all duration-200 flex items-center gap-1.5 group/nav ${
+                isLight
+                  ? "text-rose-600 hover:bg-white hover:text-rose-700 hover:shadow-xs"
+                  : "text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 hover:border-rose-500/50 shadow-[0_0_15px_rgba(244,63,94,0.18)]"
+              }`}
             >
               <span>NFC Studio</span>
               <span className="px-1.5 py-0.5 rounded-full bg-rose-500 text-white text-[9px] font-black group-hover/nav:scale-105 transition-transform">
@@ -71,7 +112,11 @@ export default function MarketingLayout({
             </Link>
             <Link
               href="/about"
-              className={`px-4 py-2 rounded-full transition-all ${isLight ? "hover:bg-white hover:text-neutral-950 hover:shadow-sm" : "hover:bg-white/10 hover:text-white"}`}
+              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
+                isLight
+                  ? "text-neutral-700 hover:bg-white hover:text-neutral-950 hover:shadow-xs"
+                  : "text-neutral-300 hover:bg-white/[0.12] hover:text-white shadow-2xs"
+              }`}
             >
               About Us
             </Link>
@@ -90,8 +135,13 @@ export default function MarketingLayout({
       </div>
 
       {/* ── Footer ── */}
-      <footer className={`border-t py-12 px-6 transition-colors ${isLight ? "border-neutral-200 bg-neutral-50" : "border-neutral-800/80 bg-neutral-950"}`}>
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+      <footer className={`border-t py-14 px-6 transition-colors relative overflow-hidden ${
+        isLight ? "border-neutral-200 bg-neutral-50" : "border-white/[0.08] bg-[#060608]"
+      }`}>
+        {!isLight && (
+          <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-48 bg-gradient-to-b from-rose-500/10 via-orange-500/5 to-transparent blur-3xl pointer-events-none" />
+        )}
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
           <div className="flex items-center gap-2">
             <SmartphoneNfc className="text-rose-500 w-5 h-5" />
             <span className={`text-lg font-bold ${isLight ? "text-neutral-950" : "text-white"}`}>TAGIT</span>

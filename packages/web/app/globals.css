@@ -50,10 +50,25 @@ html {
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: #ffffff;
-  color: #0a0a0a;
+  background-color: var(--bg-body, #ffffff);
+  color: var(--text-body, #0a0a0a);
   min-height: 100dvh;
   overflow-x: hidden;
+}
+
+html.dark body, body.dark {
+  background-color: #08080a !important;
+  color: #f5f5f5 !important;
+}
+
+html.dark {
+  background-color: #08080a !important;
+  color-scheme: dark;
+}
+
+html {
+  background-color: #ffffff;
+  color-scheme: light;
 }
 
 /* ── Background Orbs (atmospheric glow) ─────────────────────── */

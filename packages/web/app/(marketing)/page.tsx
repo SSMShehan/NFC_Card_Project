@@ -192,13 +192,19 @@ export default function LandingPage() {
         </section>
 
         {/* ── Features Section ── */}
-        <section id="features" className={`py-24 border-y transition-colors ${
-          isLight ? "bg-neutral-50 border-neutral-200" : "bg-neutral-900/50 border-neutral-800"
+        <section id="features" className={`py-24 border-y transition-colors relative overflow-hidden ${
+          isLight ? "bg-neutral-50 border-neutral-200" : "bg-neutral-900/30 border-white/[0.08]"
         }`}>
-          <div className="max-w-7xl mx-auto px-6">
+          {!isLight && (
+            <>
+              <div className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-rose-500/10 rounded-full blur-[120px] pointer-events-none" />
+              <div className="absolute top-1/2 right-1/4 translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-orange-500/10 rounded-full blur-[120px] pointer-events-none" />
+            </>
+          )}
+          <div className="max-w-7xl mx-auto px-6 relative z-10">
             <div className="text-center max-w-2xl mx-auto mb-16">
-              <h2 className={`text-3xl md:text-4xl font-bold mb-4 transition-colors ${isLight ? "text-neutral-950" : "text-white"}`}>Everything you need to network better</h2>
-              <p className={`text-lg transition-colors ${isLight ? "text-neutral-500" : "text-neutral-400"}`}>Leave the paper cards in the past. TAGIT offers a modern, seamless way to share who you are and what you do.</p>
+              <h2 className={`text-3xl md:text-4xl font-extrabold mb-4 transition-colors ${isLight ? "text-neutral-950" : "text-white tracking-tight drop-shadow-sm"}`}>Everything you need to network better</h2>
+              <p className={`text-lg transition-colors ${isLight ? "text-neutral-500" : "text-neutral-300 font-normal"}`}>Leave the paper cards in the past. TAGIT offers a modern, seamless way to share who you are and what you do.</p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
@@ -225,19 +231,22 @@ export default function LandingPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-100px" }}
                   transition={{ delay: i * 0.2 }}
-                  className={`p-8 rounded-3xl transition-all border ${
+                  className={`p-8 rounded-3xl transition-all border relative overflow-hidden group ${
                     isLight
                       ? "bg-white border-neutral-200 shadow-md shadow-neutral-100 hover:shadow-lg hover:-translate-y-1"
-                      : "bg-neutral-900/90 border-neutral-800 text-white shadow-sm shadow-black/20 hover:border-neutral-700 hover:-translate-y-1"
+                      : "bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-2xl border-white/[0.12] text-white shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] hover:border-rose-500/40 hover:shadow-[0_0_30px_rgba(244,63,94,0.15)] hover:-translate-y-1.5"
                   }`}
                 >
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 ${
-                    isLight ? "bg-neutral-50" : "bg-white/5"
+                  {!isLight && (
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-rose-500/20 transition-all duration-500" />
+                  )}
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 relative z-10 transition-transform group-hover:scale-110 ${
+                    isLight ? "bg-neutral-50 border border-neutral-100" : "bg-gradient-to-br from-rose-500/20 via-orange-500/10 to-transparent border border-white/15 shadow-inner shadow-rose-500/20"
                   }`}>
                     {feature.icon}
                   </div>
-                  <h3 className={`text-xl font-bold mb-3 ${isLight ? "text-neutral-950" : "text-white"}`}>{feature.title}</h3>
-                  <p className={isLight ? "text-neutral-500" : "text-neutral-400"}>{feature.desc}</p>
+                  <h3 className={`text-xl font-bold mb-3 relative z-10 ${isLight ? "text-neutral-950" : "text-white tracking-wide"}`}>{feature.title}</h3>
+                  <p className={`relative z-10 leading-relaxed ${isLight ? "text-neutral-500" : "text-neutral-300"}`}>{feature.desc}</p>
                 </motion.div>
               ))}
             </div>
@@ -245,16 +254,16 @@ export default function LandingPage() {
         </section>
 
         {/* ── How It Works ── */}
-        <section id="how-it-works" className="py-24 max-w-7xl mx-auto px-6">
+        <section id="how-it-works" className="py-24 max-w-7xl mx-auto px-6 relative">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className={`text-3xl md:text-4xl font-bold mb-4 transition-colors ${isLight ? "text-neutral-950" : "text-white"}`}>How it works</h2>
-            <p className={`text-lg transition-colors ${isLight ? "text-neutral-500" : "text-neutral-400"}`}>Getting started with TAGIT is incredibly simple.</p>
+            <h2 className={`text-3xl md:text-4xl font-extrabold mb-4 transition-colors ${isLight ? "text-neutral-950" : "text-white tracking-tight drop-shadow-sm"}`}>How it works</h2>
+            <p className={`text-lg transition-colors ${isLight ? "text-neutral-500" : "text-neutral-300 font-normal"}`}>Getting started with TAGIT is incredibly simple.</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-12 relative">
             {/* Connecting line for desktop */}
-            <div className={`hidden md:block absolute top-12 left-[15%] right-[15%] h-0.5 ${
-              isLight ? "bg-gradient-to-r from-rose-100 via-orange-100 to-indigo-100" : "bg-gradient-to-r from-rose-900/40 via-orange-900/40 to-indigo-900/40"
+            <div className={`hidden md:block absolute top-12 left-[15%] right-[15%] h-0.5 transition-all duration-500 ${
+              isLight ? "bg-gradient-to-r from-rose-100 via-orange-100 to-indigo-100" : "bg-gradient-to-r from-rose-500/40 via-orange-500/40 to-indigo-500/40 shadow-[0_0_15px_rgba(244,63,94,0.4)]"
             }`} />
 
             {[
@@ -262,17 +271,17 @@ export default function LandingPage() {
               { num: "2", title: "Get Your Card", desc: "Order your premium NFC business card. We'll link it directly to your profile." },
               { num: "3", title: "Start Tapping", desc: "Tap your card on any modern smartphone to instantly share your digital presence." }
             ].map((step, i) => (
-              <div key={i} className="relative z-10 text-center">
-                <div className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center border-4 shadow-md mb-6 relative transition-colors ${
-                  isLight ? "bg-white border-indigo-50" : "bg-neutral-900 border-neutral-800"
+              <div key={i} className="relative z-10 text-center group">
+                <div className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center border-4 mb-6 relative transition-all duration-300 group-hover:scale-110 ${
+                  isLight ? "bg-white border-indigo-50 shadow-md" : "bg-gradient-to-br from-[#161620] to-[#0a0a0e] border-rose-500/30 shadow-[0_0_25px_rgba(244,63,94,0.2)]"
                 }`}>
-                  <div className="absolute inset-0 bg-gradient-to-tr from-rose-500 to-orange-500 rounded-full opacity-10" />
-                  <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-tr from-rose-500 to-orange-500">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-rose-500 to-orange-500 rounded-full opacity-10 group-hover:opacity-20 transition-opacity" />
+                  <span className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-tr from-rose-500 to-orange-500">
                     {step.num}
                   </span>
                 </div>
-                <h3 className={`text-xl font-bold mb-2 ${isLight ? "text-neutral-950" : "text-white"}`}>{step.title}</h3>
-                <p className={isLight ? "text-neutral-500 max-w-xs mx-auto" : "text-neutral-400 max-w-xs mx-auto"}>{step.desc}</p>
+                <h3 className={`text-xl font-bold mb-2 ${isLight ? "text-neutral-950" : "text-white tracking-wide"}`}>{step.title}</h3>
+                <p className={isLight ? "text-neutral-500 max-w-xs mx-auto leading-relaxed" : "text-neutral-300 max-w-xs mx-auto leading-relaxed"}>{step.desc}</p>
               </div>
             ))}
           </div>
@@ -280,14 +289,18 @@ export default function LandingPage() {
 
         {/* ── CTA Banner ── */}
         <section className="py-20 px-6">
-          <div className="max-w-5xl mx-auto bg-neutral-950 rounded-[3rem] p-12 md:p-20 text-center relative overflow-hidden shadow-xl border border-neutral-800/80">
+          <div className={`max-w-5xl mx-auto rounded-[3rem] p-12 md:p-20 text-center relative overflow-hidden transition-all ${
+            isLight
+              ? "bg-neutral-950 shadow-xl border border-neutral-800/80 text-white"
+              : "bg-gradient-to-br from-[#121218] via-[#0b0b0f] to-[#141016] border border-white/15 shadow-[0_20px_70px_-15px_rgba(244,63,94,0.3)] text-white"
+          }`}>
             <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-rose-500 to-transparent rounded-full blur-[100px] opacity-40 translate-x-1/3 -translate-y-1/3" />
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-cyan-500 to-transparent rounded-full blur-[100px] opacity-40 -translate-x-1/3 translate-y-1/3" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-cyan-500 via-orange-500 to-transparent rounded-full blur-[100px] opacity-40 -translate-x-1/3 translate-y-1/3" />
 
             <div className="relative z-10 max-w-2xl mx-auto">
-              <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 leading-tight">Ready to upgrade your networking game?</h2>
-              <p className="text-neutral-300 text-lg mb-10">Join thousands of professionals who have already ditched paper cards.</p>
-              <button className="px-10 py-5 rounded-full bg-white text-neutral-950 font-bold text-lg hover:shadow-lg transition-all hover:-translate-y-1">
+              <h2 className="text-3xl md:text-5xl font-black text-white mb-6 leading-tight tracking-tight drop-shadow-md">Ready to upgrade your networking game?</h2>
+              <p className="text-neutral-200 text-lg mb-10 font-normal leading-relaxed">Join thousands of professionals who have already ditched paper cards and stepped into the future.</p>
+              <button className="px-10 py-5 rounded-full bg-gradient-to-r from-rose-500 via-orange-500 to-amber-500 text-white font-extrabold text-lg shadow-lg shadow-rose-500/30 hover:shadow-rose-500/50 hover:scale-105 transition-all duration-300">
                 Order Your Card Now
               </button>
             </div>
