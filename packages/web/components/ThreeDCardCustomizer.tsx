@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Settings2, User, CheckCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useCart } from "../context/CartContext";
 
 // --- OPTIONS ---
 const FOIL_COLORS = [
@@ -206,6 +207,7 @@ export function PremiumHeroGraphic() {
 export default function ThreeDCardCustomizer() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { addItem, openCart } = useCart();
   const productName = searchParams.get("product") || "Executive Metal";
   const isPVC = productName.trim().toLowerCase().includes("pvc");
 
@@ -312,7 +314,14 @@ export default function ThreeDCardCustomizer() {
   const handleAddToCart = async () => {
     const designId = await saveDesignToBackend("CART");
     if (designId) {
-      alert("Design added to cart! It will be saved for 3 days.");
+      addItem({
+        id: designId,
+        name: productName,
+        price: `LKR ${totalPrice.toLocaleString()}`,
+        priceNum: totalPrice,
+        type: "card",
+      });
+      openCart();
       setIsCheckoutMode(false);
     }
   };
