@@ -11,6 +11,7 @@ import { prisma } from '../config/database';
 import { signAccessToken, signRefreshToken, verifyRefreshToken } from '../utils/jwtUtils';
 import { sendSuccess, sendError } from '../utils/responseHelper';
 import { AppError } from '../middlewares/errorMiddleware';
+import { verifyGoogleToken, verifyAppleToken, generateUniqueUsername } from '../services/oauthService';
 
 // ── Validation Schemas ────────────────────────────────────────
 
@@ -117,6 +118,10 @@ export async function login(
 
     if (!user) {
       throw new AppError('Invalid email or password.', 401);
+    }
+
+    if (!user.passwordHash) {
+      throw new AppError('This account was created with Google or Apple Sign-In. Please use the social login buttons below.', 401);
     }
 
     const passwordValid = await bcrypt.compare(password, user.passwordHash);
@@ -235,3 +240,176 @@ export async function me(
     next(error);
   }
 }
+
+/**
+ * POST /api/v1/auth/google
+ * Verifies Google ID Token and logs user in (or creates account).
+ */
+export async function googleAuth(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const { idToken } = z.object({ idToken: z.string().min(1, 'idToken is required') }).parse(req.body);
+
+    const info = await verifyGoogleToken(idToken);
+
+    // 1. Check if user exists by googleId OR email (account linking)
+    let user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { googleId: info.googleId },
+          { email: info.email },
+        ],
+      },
+      include: {
+        profile: true,
+      },
+    });
+
+    if (user) {
+      // If found by email but googleId not set, link account
+      if (!user.googleId) {
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            googleId: info.googleId,
+            authProvider: user.authProvider === 'EMAIL' ? 'EMAIL_GOOGLE' : user.authProvider,
+          },
+          include: { profile: true },
+        });
+      }
+
+      // Update profile picture if missing and google provided one
+      if (user.profile && !user.profile.profilePicture && info.profilePicture) {
+        await prisma.profile.update({
+          where: { id: user.profile.id },
+          data: { profilePicture: info.profilePicture },
+        });
+        user.profile.profilePicture = info.profilePicture;
+      }
+    } else {
+      // Create new User + Profile
+      const username = await generateUniqueUsername(info.email, info.displayName);
+      user = await prisma.user.create({
+        data: {
+          email: info.email,
+          googleId: info.googleId,
+          authProvider: 'GOOGLE',
+          profile: {
+            create: {
+              username,
+              displayName: info.displayName,
+              profilePicture: info.profilePicture || null,
+            },
+          },
+        },
+        include: { profile: true },
+      });
+    }
+
+    const accessToken = signAccessToken({
+      userId: user.id,
+      email: user.email,
+      profileId: user.profile!.id,
+      subscriptionTier: user.subscriptionTier,
+    });
+    const refreshToken = signRefreshToken(user.id);
+
+    sendSuccess(res, {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        subscriptionTier: user.subscriptionTier,
+        profile: user.profile,
+      },
+    }, 'Signed in with Google successfully.', 200);
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * POST /api/v1/auth/apple
+ * Verifies Apple Identity Token and logs user in (or creates account).
+ */
+export async function appleAuth(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const { identityToken, user: rawUser } = z.object({
+      identityToken: z.string().min(1, 'identityToken is required'),
+      user: z.any().optional(),
+    }).parse(req.body);
+
+    const info = await verifyAppleToken(identityToken, rawUser);
+
+    let user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { appleId: info.appleId },
+          { email: info.email },
+        ],
+      },
+      include: {
+        profile: true,
+      },
+    });
+
+    if (user) {
+      if (!user.appleId) {
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            appleId: info.appleId,
+            authProvider: user.authProvider === 'EMAIL' ? 'EMAIL_APPLE' : user.authProvider,
+          },
+          include: { profile: true },
+        });
+      }
+    } else {
+      const username = await generateUniqueUsername(info.email, info.displayName);
+      user = await prisma.user.create({
+        data: {
+          email: info.email,
+          appleId: info.appleId,
+          authProvider: 'APPLE',
+          profile: {
+            create: {
+              username,
+              displayName: info.displayName,
+            },
+          },
+        },
+        include: { profile: true },
+      });
+    }
+
+    const accessToken = signAccessToken({
+      userId: user.id,
+      email: user.email,
+      profileId: user.profile!.id,
+      subscriptionTier: user.subscriptionTier,
+    });
+    const refreshToken = signRefreshToken(user.id);
+
+    sendSuccess(res, {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        subscriptionTier: user.subscriptionTier,
+        profile: user.profile,
+      },
+    }, 'Signed in with Apple successfully.', 200);
+  } catch (error) {
+    next(error);
+  }
+}
+

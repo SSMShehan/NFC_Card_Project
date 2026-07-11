@@ -6,7 +6,7 @@
 // ============================================================
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { apiClient, persistTokens, clearTokens, getAccessToken, ApiResponse } from '../services/api';
+import { apiClient, persistTokens, clearTokens, getAccessToken, ApiResponse, googleLoginApi, appleLoginApi } from '../services/api';
 
 export interface Profile {
   id: string;
@@ -55,6 +55,8 @@ interface AuthContextType {
   isLoading: boolean;
   login: (credentials: LoginCredentials) => Promise<{ success: boolean; error?: string }>;
   register: (payload: RegisterPayload) => Promise<{ success: boolean; error?: string }>;
+  loginWithGoogle: (idToken: string) => Promise<{ success: boolean; error?: string }>;
+  loginWithApple: (identityToken: string, user?: any) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   refreshProfile: () => Promise<void>;
 }
@@ -135,6 +137,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  /** Google OAuth login handler */
+  const loginWithGoogle = async (idToken: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const res = await googleLoginApi(idToken);
+      if (res.success && res.data) {
+        const { accessToken, refreshToken, user: userData } = res.data;
+        persistTokens(accessToken, refreshToken);
+        setUser(userData);
+        return { success: true };
+      }
+      return { success: false, error: res.error || res.message || 'Google authentication failed.' };
+    } catch (err: any) {
+      const errorMessage =
+        err?.response?.data?.error ||
+        err?.response?.data?.message ||
+        err?.message ||
+        'Failed to connect to authentication server for Google Sign-In.';
+      return { success: false, error: errorMessage };
+    }
+  };
+
+  /** Apple OAuth login handler */
+  const loginWithApple = async (identityToken: string, rawUser?: any): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const res = await appleLoginApi(identityToken, rawUser);
+      if (res.success && res.data) {
+        const { accessToken, refreshToken, user: userData } = res.data;
+        persistTokens(accessToken, refreshToken);
+        setUser(userData);
+        return { success: true };
+      }
+      return { success: false, error: res.error || res.message || 'Apple authentication failed.' };
+    } catch (err: any) {
+      const errorMessage =
+        err?.response?.data?.error ||
+        err?.response?.data?.message ||
+        err?.message ||
+        'Failed to connect to authentication server for Apple Sign-In.';
+      return { success: false, error: errorMessage };
+    }
+  };
+
   /** Logout handler */
   const logout = () => {
     clearTokens();
@@ -166,6 +210,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading,
         login,
         register,
+        loginWithGoogle,
+        loginWithApple,
         logout,
         refreshProfile,
       }}

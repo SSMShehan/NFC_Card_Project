@@ -22,6 +22,16 @@ const nextConfig = {
         hostname: 'api.dicebear.com', // Fallback avatar service
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.googleusercontent.com',
+        pathname: '/**',
+      },
     ],
   },
 

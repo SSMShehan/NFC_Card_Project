@@ -112,4 +112,15 @@ apiClient.interceptors.response.use(
   },
 );
 
+// ── Social Auth Endpoints ─────────────────────────────────────
+export async function googleLoginApi(idToken: string) {
+  const response = await apiClient.post<ApiResponse<{ accessToken: string; refreshToken: string; user: any }>>('/auth/google', { idToken });
+  return response.data;
+}
+
+export async function appleLoginApi(identityToken: string, user?: any) {
+  const response = await apiClient.post<ApiResponse<{ accessToken: string; refreshToken: string; user: any }>>('/auth/apple', { identityToken, user });
+  return response.data;
+}
+
 export { apiClient };

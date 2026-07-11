@@ -5,19 +5,108 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff, Loader2, AlertCircle, ArrowRight, Lock, Mail, CheckCircle2 } from "lucide-react";
+import { useGoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../../../context/AuthContext";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, loginWithGoogle, loginWithApple } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(true);
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  const googleLoginPopup = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setIsSubmitting(true);
+      setError(null);
+      const res = await loginWithGoogle(tokenResponse.access_token);
+      if (res.success) {
+        setIsSuccess(true);
+        setTimeout(() => router.push("/products"), 700);
+      } else {
+        setError(res.error || "Google sign-in failed.");
+        setIsSubmitting(false);
+      }
+    },
+    onError: () => {
+      setError("Real Google popup closed or Client ID not configured. To authenticate with the live Google Mail account on this device, paste your Google OAuth Client ID into packages/web/.env.local (NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com).");
+    },
+  });
+
+  const handleGoogleClick = async (forceDemo = false) => {
+    if (forceDemo) {
+      setIsSubmitting(true);
+      setError(null);
+      const res = await loginWithGoogle("mock_google_token_" + Date.now());
+      if (res.success) {
+        setIsSuccess(true);
+        setTimeout(() => router.push("/products"), 700);
+      } else {
+        setError(res.error || "Google demo login failed.");
+        setIsSubmitting(false);
+      }
+      return;
+    }
+
+    // Always attempt real device Google Mail authentication popup!
+    try {
+      googleLoginPopup();
+    } catch {
+      setError("Could not open Google Login popup. Please verify your internet connection or Client ID setup.");
+    }
+  };
+
+  const handleAppleClick = async (forceDemo = false) => {
+    if (forceDemo) {
+      setIsSubmitting(true);
+      setError(null);
+      const res = await loginWithApple("mock_apple_token_" + Date.now());
+      if (res.success) {
+        setIsSuccess(true);
+        setTimeout(() => router.push("/products"), 700);
+      } else {
+        setError(res.error || "Apple demo login failed.");
+        setIsSubmitting(false);
+      }
+      return;
+    }
+
+    // Check if real Apple ID script is loaded on window
+    if (typeof window !== "undefined" && (window as any).AppleID && (window as any).AppleID.auth) {
+      try {
+        await (window as any).AppleID.auth.init({
+          clientId: process.env.NEXT_PUBLIC_APPLE_CLIENT_ID || "cards.tagit.web",
+          scope: "name email",
+          redirectURI: window.location.origin + "/login",
+          usePopup: true,
+        });
+        const data = await (window as any).AppleID.auth.signIn();
+        if (data && data.authorization && data.authorization.id_token) {
+          setIsSubmitting(true);
+          setError(null);
+          const res = await loginWithApple(data.authorization.id_token, data.user);
+          if (res.success) {
+            setIsSuccess(true);
+            setTimeout(() => router.push("/products"), 700);
+          } else {
+            setError(res.error || "Apple sign-in failed.");
+            setIsSubmitting(false);
+          }
+          return;
+        }
+      } catch {
+        setError("Real Apple ID popup closed or Client ID not configured. To authenticate with live Apple ID, set NEXT_PUBLIC_APPLE_CLIENT_ID in .env.local.");
+        return;
+      }
+    } else {
+      setError("Apple Sign-In SDK loading... Please check internet connection and try again.");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -205,11 +294,12 @@ export default function LoginPage() {
       </div>
 
       {/* Social Buttons */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3">
         <button
           type="button"
-          onClick={() => alert("Social SSO integration coming soon! Please sign in with email/password.")}
-          className="py-3 px-4 rounded-xl bg-white border-2 border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50 text-xs font-extrabold text-neutral-800 transition-all flex items-center justify-center gap-2 shadow-2xs"
+          onClick={() => handleGoogleClick()}
+          disabled={isSubmitting || isSuccess}
+          className="py-3 px-4 rounded-xl bg-white border-2 border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50 text-xs font-extrabold text-neutral-800 transition-all flex items-center justify-center gap-2 shadow-2xs disabled:opacity-50"
         >
           <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
             <path
@@ -230,17 +320,6 @@ export default function LoginPage() {
             />
           </svg>
           Google
-        </button>
-
-        <button
-          type="button"
-          onClick={() => alert("Social SSO integration coming soon! Please sign in with email/password.")}
-          className="py-3 px-4 rounded-xl bg-white border-2 border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50 text-xs font-extrabold text-neutral-800 transition-all flex items-center justify-center gap-2 shadow-2xs"
-        >
-          <svg className="w-3.5 h-3.5 fill-current text-neutral-950" viewBox="0 0 24 24">
-            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.35c.64-.78 1.08-1.86.96-2.94-.92.04-2.03.62-2.68 1.39-.58.68-1.1 1.78-.96 2.85 1.03.08 2.04-.52 2.68-1.3" />
-          </svg>
-          Apple
         </button>
       </div>
 
