@@ -37,19 +37,26 @@ const PAYMENT_METHODS = [
 ];
 
 function MiniCardPreview({ config }: { config: CardConfig }) {
+  const isPVC = config.productName?.toLowerCase().includes("pvc");
+  const cardStyle = isPVC 
+    ? { backgroundColor: config.bgColor || "#f8f9fa" }
+    : { background: "linear-gradient(135deg, #232427 0%, #1a1b1d 40%, #0e0f10 100%)" };
+
+  const textColor = isPVC && config.bgColor === "#f8f9fa" ? "#000" : (isPVC ? "#fff" : config.foilColor);
+
   return (
-    <div className="w-full aspect-[1.586] rounded-2xl relative overflow-hidden shadow-2xl flex flex-col justify-between p-5" style={{ backgroundColor: config.bgColor || "#1a1b1e" }}>
-      {config.bgImage && <div className="absolute inset-0" style={{ backgroundImage: `url(${config.bgImage})`, backgroundSize: "cover", backgroundPosition: "center", opacity: 0.5 }} />}
+    <div className="w-full aspect-[1.586] rounded-2xl relative overflow-hidden shadow-2xl flex flex-col justify-between p-5" style={cardStyle}>
+      {config.bgImage && <div className="absolute inset-0" style={{ backgroundImage: `url(${config.bgImage})`, backgroundSize: "cover", backgroundPosition: "center", opacity: isPVC ? 1 : 0.5 }} />}
       <div className="relative z-10 flex justify-between items-start">
         <div className="w-10 h-7 rounded-sm opacity-80" style={{ background: `linear-gradient(135deg, ${config.foilColor}, ${config.foilColor}aa)`, boxShadow: `0 0 12px ${config.accentColor}40` }} />
         <div className="w-7 h-7 rounded-full border-2 opacity-60" style={{ borderColor: config.accentColor }} />
       </div>
-      <div className="relative z-10">
-        <p className="text-white font-black text-lg tracking-widest leading-none">{config.displayName || "YOUR NAME"}</p>
-        <p className="text-white/60 text-xs font-medium tracking-wider mt-1">{config.designation || "YOUR TITLE"}</p>
+      <div className="relative z-10" style={{ color: textColor }}>
+        <p className="font-black text-lg tracking-widest leading-none">{config.displayName || "YOUR NAME"}</p>
+        <p className="opacity-70 text-xs font-medium tracking-wider mt-1">{config.designation || "YOUR TITLE"}</p>
         <div className="mt-3 flex items-center gap-1">
           <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: config.accentColor }} />
-          <p className="text-white/40 text-[9px] font-medium tracking-widest">NFC · TAGIT</p>
+          <p className="opacity-50 text-[9px] font-medium tracking-widest">NFC · TAGIT</p>
         </div>
       </div>
     </div>
