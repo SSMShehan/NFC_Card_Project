@@ -76,12 +76,20 @@ export function NavbarAuthButtons() {
                 </Link>
               )}
               <Link
+                href="/profile"
+                onClick={() => setDropdownOpen(false)}
+                className="flex items-center gap-2.5 px-4 py-2 text-sm hover:bg-neutral-50 hover:text-rose-600 transition-colors font-medium text-neutral-800"
+              >
+                <UserIcon className="w-4 h-4 text-neutral-500" />
+                User Profile & Account
+              </Link>
+              <Link
                 href="/customize"
                 onClick={() => setDropdownOpen(false)}
                 className="flex items-center gap-2.5 px-4 py-2 text-sm hover:bg-neutral-50 hover:text-rose-600 transition-colors"
               >
-                <Settings className="w-4 h-4 text-neutral-400" />
-                Edit User Profile
+                <Sparkles className="w-4 h-4 text-neutral-400" />
+                Customize NFC Card
               </Link>
               <Link
                 href="/products"

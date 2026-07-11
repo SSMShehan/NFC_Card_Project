@@ -67,7 +67,7 @@ export async function register(
         },
       },
       include: {
-        profile: { select: { id: true, username: true } },
+        profile: true,
       },
     });
 
@@ -90,6 +90,8 @@ export async function register(
           email: user.email,
           role: user.role,
           subscriptionTier: user.subscriptionTier,
+          createdAt: user.createdAt,
+          authProvider: user.authProvider,
           profile: user.profile,
         },
       },
@@ -115,7 +117,7 @@ export async function login(
 
     const user = await prisma.user.findUnique({
       where: { email },
-      include: { profile: { select: { id: true, username: true } } },
+      include: { profile: true },
     });
 
     if (!user) {
@@ -148,6 +150,8 @@ export async function login(
         email: user.email,
         role: user.role,
         subscriptionTier: user.subscriptionTier,
+        createdAt: user.createdAt,
+        authProvider: user.authProvider,
         profile: user.profile,
       },
     });
@@ -217,6 +221,7 @@ export async function me(
         role: true,
         subscriptionTier: true,
         createdAt: true,
+        authProvider: true,
         profile: {
           select: {
             id: true,
@@ -332,6 +337,8 @@ export async function googleAuth(
         email: user.email,
         role: user.role,
         subscriptionTier: user.subscriptionTier,
+        createdAt: user.createdAt,
+        authProvider: user.authProvider,
         profile: user.profile,
       },
     }, 'Signed in with Google successfully.', 200);
@@ -415,6 +422,8 @@ export async function appleAuth(
         email: user.email,
         role: user.role,
         subscriptionTier: user.subscriptionTier,
+        createdAt: user.createdAt,
+        authProvider: user.authProvider,
         profile: user.profile,
       },
     }, 'Signed in with Apple successfully.', 200);
