@@ -75,7 +75,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0E] text-white flex flex-col lg:flex-row selection:bg-amber-500/30 selection:text-amber-200 font-sans">
+    <div className="h-screen bg-[#0A0A0E] text-white flex flex-col lg:flex-row selection:bg-amber-500/30 selection:text-amber-200 font-sans overflow-hidden">
       {/* ── Mobile Header ──────────────────────────────────────── */}
       <header className="lg:hidden flex items-center justify-between px-5 py-4 border-b border-white/10 bg-[#12121A]/80 backdrop-blur-xl sticky top-0 z-50">
         <div className="flex items-center gap-2.5">
@@ -97,8 +97,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* ── Sidebar Navigation ─────────────────────────────────── */}
       <aside
         className={`
-          fixed lg:static inset-y-0 left-0 z-40 w-72 bg-[#101018]/95 lg:bg-[#101018]/60 backdrop-blur-2xl
-          border-r border-white/10 flex flex-col transition-transform duration-300 ease-out
+          fixed lg:sticky top-0 h-screen z-40 w-72 bg-[#101018]/95 lg:bg-[#101018]/60 backdrop-blur-2xl
+          border-r border-white/10 flex flex-col transition-transform duration-300 ease-out shrink-0
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
@@ -203,7 +203,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* ── Main Content Area ──────────────────────────────────── */}
-      <main className="flex-1 min-w-0 flex flex-col min-h-screen overflow-x-hidden">
+      <main className="flex-1 min-w-0 flex flex-col h-full lg:h-screen overflow-hidden">
         {/* Top Action Bar */}
         <header className="hidden lg:flex items-center justify-between px-8 py-4 border-b border-white/10 bg-[#12121A]/40 backdrop-blur-xl sticky top-0 z-30">
           <div className="flex items-center gap-4">
