@@ -485,9 +485,9 @@ export async function updateUserRoleTier(req: Request, res: Response): Promise<v
   }
 }
 
-export async function createAdminUser(req: Request, res: Response): Promise<void> {
+export async function createUserAccount(req: Request, res: Response): Promise<void> {
   try {
-    const { email, password, username, displayName } = req.body;
+    const { email, password, username, displayName, role } = req.body;
 
     if (!email || !password || !username || !displayName) {
       sendError(res, 'All fields (email, password, username, displayName) are required.', 400);
@@ -511,11 +511,13 @@ export async function createAdminUser(req: Request, res: Response): Promise<void
     // Hash password with cost factor 12
     const passwordHash = await bcrypt.hash(password, 12);
 
-    const newAdmin = await prisma.user.create({
+    const userRole = role === 'ADMIN' ? UserRole.ADMIN : UserRole.USER;
+
+    const newUser = await prisma.user.create({
       data: {
         email,
         passwordHash,
-        role: UserRole.ADMIN,
+        role: userRole,
         subscriptionTier: SubscriptionTier.FREE,
         authProvider: 'EMAIL',
         profile: {
@@ -529,10 +531,79 @@ export async function createAdminUser(req: Request, res: Response): Promise<void
       include: { profile: true },
     });
 
-    sendSuccess(res, newAdmin, 'New admin user created successfully.', 201);
+    sendSuccess(res, newUser, 'New user account created successfully.', 201);
   } catch (error) {
-    console.error('createAdminUser error:', error);
-    sendError(res, 'Failed to create new admin user.', 500);
+    console.error('createUserAccount error:', error);
+    sendError(res, 'Failed to create new user account.', 500);
+  }
+}
+
+export async function updateUserProfile(req: Request, res: Response): Promise<void> {
+  try {
+    const { id } = req.params; // User ID
+    const { displayName, username, bio, phone, company, jobTitle, website } = req.body;
+
+    const user = await prisma.user.findUnique({
+      where: { id },
+      include: { profile: true },
+    });
+
+    if (!user) {
+      sendError(res, 'User not found.', 404);
+      return;
+    }
+
+    let updatedProfile;
+    if (user.profile) {
+      // Check if username is changing and is already taken
+      if (username && username !== user.profile.username) {
+        const taken = await prisma.profile.findUnique({ where: { username } });
+        if (taken) {
+          sendError(res, 'Username already taken.', 400);
+          return;
+        }
+      }
+
+      updatedProfile = await prisma.profile.update({
+        where: { id: user.profile.id },
+        data: {
+          displayName,
+          username,
+          bio,
+          phone,
+          company,
+          jobTitle,
+          website,
+        },
+      });
+    } else {
+      // Auto-generate profile if missing
+      const userMailPrefix = user.email.split('@')[0];
+      const fallbackUsername = username || `${userMailPrefix}-${Math.floor(100 + Math.random() * 900)}`;
+
+      // Check fallback username availability
+      const taken = await prisma.profile.findUnique({ where: { username: fallbackUsername } });
+      const finalUsername = taken ? `${fallbackUsername}-${Math.floor(10 + Math.random() * 90)}` : fallbackUsername;
+
+      updatedProfile = await prisma.profile.create({
+        data: {
+          userId: user.id,
+          displayName: displayName || userMailPrefix,
+          username: finalUsername,
+          bio,
+          phone,
+          company,
+          jobTitle,
+          website,
+          status: 'ACTIVE',
+        },
+      });
+    }
+
+    sendSuccess(res, updatedProfile, 'User profile updated successfully.');
+  } catch (error) {
+    console.error('updateUserProfile error:', error);
+    sendError(res, 'Failed to update user profile.', 500);
   }
 }
 
