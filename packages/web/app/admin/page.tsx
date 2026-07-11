@@ -95,7 +95,7 @@ export default function AdminDashboardPage() {
             Gross Sales Revenue
           </p>
           <h3 className={`text-3xl sm:text-4xl font-extrabold mt-2 tracking-tight ${isLight ? 'text-neutral-900' : 'text-white'}`}>
-            ${(metrics.totalRevenue || 0).toFixed(2)}
+            LKR {(metrics.totalRevenue || 0).toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </h3>
           <div className="mt-4 flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
             <span className="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30">+18.4%</span>
@@ -338,7 +338,7 @@ export default function AdminDashboardPage() {
                       ))}
                     </td>
                     <td className={`py-4 px-4 font-mono font-bold ${isLight ? 'text-neutral-900' : 'text-white'}`}>
-                      ${ord.totalAmount?.toFixed(2)}
+                      LKR {ord.totalAmount?.toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
                     <td className="py-4 px-4">
                       <span

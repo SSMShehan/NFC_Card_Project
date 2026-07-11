@@ -22,7 +22,7 @@ const fadeUpVariant: Variants = {
 const products = [
   {
     name: "Essential PVC",
-    price: "$29",
+    price: "LKR 4,500",
     description: "Our most popular NFC business card. Durable, sleek, and perfect for everyday networking.",
     features: ["Matte black finish", "Water resistant", "Unlimited taps", "No monthly fees"],
     color: "from-neutral-800 to-neutral-950",
@@ -30,7 +30,7 @@ const products = [
   },
   {
     name: "Executive Metal",
-    price: "$79",
+    price: "LKR 12,500",
     description: "Make a lasting impression with our premium stainless steel card. Built for executives.",
     features: ["Laser-engraved steel", "Hefty 22g weight", "Premium unboxing", "Priority support"],
     color: "from-neutral-900 to-black",
@@ -38,7 +38,7 @@ const products = [
   },
   {
     name: "Custom Bamboo",
-    price: "$39",
+    price: "LKR 6,500",
     description: "Eco-friendly and unique. Each bamboo card has a unique wood grain pattern.",
     features: ["100% sustainable", "Laser engraved", "Lightweight", "Conversation starter"],
     color: "from-amber-700 to-stone-800",

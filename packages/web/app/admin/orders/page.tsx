@@ -227,7 +227,7 @@ export default function AdminOrdersPage() {
                         )}
 
                         <span className={`font-mono font-bold text-sm ${isLight ? 'text-neutral-900' : 'text-white'}`}>
-                          ${(item.quantity * item.unitPrice).toFixed(2)}
+                          LKR {(item.quantity * item.unitPrice).toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </span>
                       </div>
                     ))}
@@ -245,7 +245,7 @@ export default function AdminOrdersPage() {
                       Order Total
                     </p>
                     <p className={`text-3xl font-black font-mono ${isLight ? 'text-neutral-900' : 'text-amber-400'}`}>
-                      ${ord.totalAmount?.toFixed(2)}
+                      LKR {ord.totalAmount?.toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </p>
 
                     <div className="mt-6 space-y-3">

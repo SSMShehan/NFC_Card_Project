@@ -32,7 +32,7 @@ export default function PricingPage() {
             <h3 className="text-2xl font-bold text-neutral-950 mb-2">Standard Profile</h3>
             <p className="text-neutral-400 mb-6">Everything you need to network digitally.</p>
             <div className="flex items-baseline gap-1">
-              <span className="text-5xl font-extrabold text-neutral-950">$0</span>
+              <span className="text-5xl font-extrabold text-neutral-950">LKR 0</span>
               <span className="text-neutral-400 font-medium">/forever</span>
             </div>
           </div>
@@ -86,10 +86,10 @@ export default function PricingPage() {
             <h3 className="text-2xl font-bold text-white mb-2">TAGIT Pro</h3>
             <p className="text-neutral-400 mb-6">Advanced features for serious networkers.</p>
             <div className="flex items-baseline gap-1">
-              <span className="text-5xl font-extrabold text-white">$4.99</span>
+              <span className="text-5xl font-extrabold text-white">LKR 1,490</span>
               <span className="text-neutral-400 font-medium">/month</span>
             </div>
-            <p className="text-xs text-indigo-300 mt-2">Billed annually at $59.88</p>
+            <p className="text-xs text-indigo-300 mt-2">Billed annually at LKR 14,900</p>
           </div>
           
           <div className="flex-1 space-y-4 mb-10 relative z-10">
@@ -123,7 +123,7 @@ export default function PricingPage() {
       >
         <p className="text-neutral-400 text-lg mb-4">Don't have a physical card yet?</p>
         <a href="/products" className="inline-flex items-center gap-2 text-rose-500 font-bold hover:text-rose-600 transition-colors">
-          Browse our premium cards starting at $29 <span aria-hidden="true">&rarr;</span>
+          Browse our premium cards starting at LKR 4,500 <span aria-hidden="true">&rarr;</span>
         </a>
       </motion.div>
     </main>

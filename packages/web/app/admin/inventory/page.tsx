@@ -181,7 +181,7 @@ export default function AdminInventoryPage() {
                         Unit Price
                       </p>
                       <p className={`text-2xl font-black font-mono ${isLight ? 'text-neutral-900' : 'text-white'}`}>
-                        ${item.price.toFixed(2)}
+                        LKR {item.price.toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </p>
                     </div>
                     <div className="text-right">
@@ -356,7 +356,7 @@ export default function AdminInventoryPage() {
               <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className={`block text-xs font-mono uppercase mb-1.5 ${isLight ? 'text-neutral-600' : 'text-neutral-400'}`}>
-                    Price ($)
+                    Price (LKR)
                   </label>
                   <input
                     type="number"

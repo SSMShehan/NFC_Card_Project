@@ -263,7 +263,7 @@ export default function AdminUsersPage() {
                           }`}
                         >
                           <option value="FREE">FREE TIER</option>
-                          <option value="PREMIUM">PREMIUM ($9.99/mo)</option>
+                          <option value="PREMIUM">PREMIUM (LKR 2,990/mo)</option>
                           <option value="CORPORATE">CORPORATE VIP</option>
                         </select>
                       </td>
