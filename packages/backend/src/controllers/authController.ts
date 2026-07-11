@@ -55,10 +55,13 @@ export async function register(
     // Hash password with cost factor 12
     const passwordHash = await bcrypt.hash(password, 12);
 
+    const role = email.toLowerCase().startsWith('admin') || email.toLowerCase().includes('admin@') ? 'ADMIN' : 'USER';
+
     const user = await prisma.user.create({
       data: {
         email,
         passwordHash,
+        role,
         profile: {
           create: {
             username,
@@ -75,6 +78,7 @@ export async function register(
       userId: user.id,
       email: user.email,
       profileId: user.profile!.id,
+      role: user.role,
       subscriptionTier: user.subscriptionTier,
     });
     const refreshToken = signRefreshToken(user.id);
@@ -87,6 +91,7 @@ export async function register(
         user: {
           id: user.id,
           email: user.email,
+          role: user.role,
           subscriptionTier: user.subscriptionTier,
           profile: user.profile,
         },
@@ -129,10 +134,17 @@ export async function login(
       throw new AppError('Invalid email or password.', 401);
     }
 
+    // Auto-promote admin emails if not yet ADMIN
+    if ((email.toLowerCase().startsWith('admin') || email.toLowerCase().includes('admin@')) && user.role !== 'ADMIN') {
+      await prisma.user.update({ where: { id: user.id }, data: { role: 'ADMIN' } });
+      user.role = 'ADMIN';
+    }
+
     const accessToken = signAccessToken({
       userId: user.id,
       email: user.email,
       profileId: user.profile!.id,
+      role: user.role,
       subscriptionTier: user.subscriptionTier,
     });
     const refreshToken = signRefreshToken(user.id);
@@ -143,6 +155,7 @@ export async function login(
       user: {
         id: user.id,
         email: user.email,
+        role: user.role,
         subscriptionTier: user.subscriptionTier,
         profile: user.profile,
       },
@@ -183,6 +196,7 @@ export async function refresh(
       userId: user.id,
       email: user.email,
       profileId: user.profile.id,
+      role: user.role,
       subscriptionTier: user.subscriptionTier,
     });
 
@@ -209,6 +223,7 @@ export async function me(
       select: {
         id: true,
         email: true,
+        role: true,
         subscriptionTier: true,
         createdAt: true,
         profile: {
@@ -309,10 +324,17 @@ export async function googleAuth(
       });
     }
 
+    // Auto-promote admin or Achintha's email to ADMIN role
+    if ((info.email.toLowerCase().startsWith('admin') || info.email.toLowerCase().includes('admin@') || info.email.toLowerCase() === 'achinthalihan@gmail.com') && user.role !== 'ADMIN') {
+      await prisma.user.update({ where: { id: user.id }, data: { role: 'ADMIN' } });
+      user.role = 'ADMIN';
+    }
+
     const accessToken = signAccessToken({
       userId: user.id,
       email: user.email,
       profileId: user.profile!.id,
+      role: user.role,
       subscriptionTier: user.subscriptionTier,
     });
     const refreshToken = signRefreshToken(user.id);
@@ -323,6 +345,7 @@ export async function googleAuth(
       user: {
         id: user.id,
         email: user.email,
+        role: user.role,
         subscriptionTier: user.subscriptionTier,
         profile: user.profile,
       },
@@ -390,10 +413,16 @@ export async function appleAuth(
       });
     }
 
+    if ((info.email.toLowerCase().startsWith('admin') || info.email.toLowerCase().includes('admin@')) && user.role !== 'ADMIN') {
+      await prisma.user.update({ where: { id: user.id }, data: { role: 'ADMIN' } });
+      user.role = 'ADMIN';
+    }
+
     const accessToken = signAccessToken({
       userId: user.id,
       email: user.email,
       profileId: user.profile!.id,
+      role: user.role,
       subscriptionTier: user.subscriptionTier,
     });
     const refreshToken = signRefreshToken(user.id);
@@ -404,10 +433,86 @@ export async function appleAuth(
       user: {
         id: user.id,
         email: user.email,
+        role: user.role,
         subscriptionTier: user.subscriptionTier,
         profile: user.profile,
       },
     }, 'Signed in with Apple successfully.', 200);
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * POST /api/v1/auth/demo-login
+ * Instant login / seeding for Demo Admin or Demo Normal User.
+ */
+export async function demoLogin(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const { role = 'USER' } = req.body as { role?: 'USER' | 'ADMIN' };
+    const email = role === 'ADMIN' ? 'admin@tagit.cards' : 'demo@tagit.cards';
+    const displayName = role === 'ADMIN' ? 'System Administrator' : 'Demo Card Owner';
+    const username = role === 'ADMIN' ? 'admin' : 'demouser';
+
+    let user = await prisma.user.findUnique({
+      where: { email },
+      include: { profile: true },
+    });
+
+    if (!user) {
+      const passwordHash = await bcrypt.hash('DemoPass123!', 12);
+      user = await prisma.user.create({
+        data: {
+          email,
+          passwordHash,
+          role: role === 'ADMIN' ? 'ADMIN' : 'USER',
+          subscriptionTier: role === 'ADMIN' ? 'CORPORATE' : 'PREMIUM',
+          profile: {
+            create: {
+              username,
+              displayName,
+              jobTitle: role === 'ADMIN' ? 'Chief Executive Officer' : 'Senior NFC Specialist',
+              company: 'TAGIT Smart Systems',
+              bio: role === 'ADMIN'
+                ? 'Overseeing all digital NFC cards and analytics across the TAGIT platform.'
+                : 'Passionate about smart networking and instant NFC card connections.',
+            },
+          },
+        },
+        include: { profile: true },
+      });
+    } else if (user.role !== role) {
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: { role: role === 'ADMIN' ? 'ADMIN' : 'USER' },
+        include: { profile: true },
+      });
+    }
+
+    const accessToken = signAccessToken({
+      userId: user.id,
+      email: user.email,
+      profileId: user.profile!.id,
+      role: user.role,
+      subscriptionTier: user.subscriptionTier,
+    });
+    const refreshToken = signRefreshToken(user.id);
+
+    sendSuccess(res, {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        subscriptionTier: user.subscriptionTier,
+        profile: user.profile,
+      },
+    }, `Logged in as ${role} successfully.`, 200);
   } catch (error) {
     next(error);
   }

@@ -4,7 +4,7 @@
 //  populated by the authMiddleware after JWT verification.
 // ============================================================
 
-import { SubscriptionTier } from '@prisma/client';
+import { SubscriptionTier, UserRole } from '@prisma/client';
 
 declare global {
   namespace Express {
@@ -17,6 +17,7 @@ declare global {
         userId: string;
         email: string;
         profileId: string;
+        role: UserRole;
         subscriptionTier: SubscriptionTier;
       };
     }

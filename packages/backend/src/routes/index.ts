@@ -7,6 +7,7 @@ import { Router } from 'express';
 import { authRouter } from './authRoutes';
 import { profileRouter } from './profileRoutes';
 import { linkRouter } from './linkRoutes';
+import { adminRouter } from './adminRoutes';
 
 export const apiRouter = Router();
 
@@ -19,6 +20,9 @@ apiRouter.use('/profile', profileRouter);
 /** Link management endpoints */
 apiRouter.use('/links', linkRouter);
 
+/** Admin management & analytics endpoints */
+apiRouter.use('/admin', adminRouter);
+
 /** API version info */
 apiRouter.get('/', (_req, res) => {
   res.json({
@@ -28,6 +32,7 @@ apiRouter.get('/', (_req, res) => {
       auth: '/api/v1/auth',
       profile: '/api/v1/profile',
       links: '/api/v1/links',
+      admin: '/api/v1/admin',
     },
   });
 });

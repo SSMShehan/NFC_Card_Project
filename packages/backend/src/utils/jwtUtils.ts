@@ -3,13 +3,14 @@
 // ============================================================
 
 import jwt from 'jsonwebtoken';
-import { SubscriptionTier } from '@prisma/client';
+import { SubscriptionTier, UserRole } from '@prisma/client';
 
 /** Shape of data encoded inside each access token */
 export interface JwtPayload {
   userId: string;
   email: string;
   profileId: string;
+  role: UserRole;
   subscriptionTier: SubscriptionTier;
 }
 
