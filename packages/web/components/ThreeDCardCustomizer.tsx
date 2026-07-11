@@ -1,13 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Settings2, User } from "lucide-react";
+import { motion } from "framer-motion";
+import { useSearchParams } from "next/navigation";
 
 // --- OPTIONS ---
 const FOIL_COLORS = [
   { id: "gold", label: "24k Gold", value: "#cfa15a", light: "#e6c583" },
   { id: "silver", label: "Sterling Silver", value: "#cfcfcf", light: "#ffffff" },
   { id: "rose", label: "Rose Gold", value: "#c08c85", light: "#d9b3ae" },
+  { id: "black", label: "Obsidian Black", value: "#1a1b1e", light: "#2a2c31" },
+  { id: "graphite", label: "Graphite", value: "#3a3b3c", light: "#4f5154" },
 ];
 
 const ACCENT_COLORS = [
@@ -15,9 +19,55 @@ const ACCENT_COLORS = [
   { id: "green", label: "Matrix Green", value: "#00FF66" },
   { id: "purple", label: "Cyber Purple", value: "#B026FF" },
   { id: "orange", label: "Blaze Orange", value: "#FF5500" },
+  { id: "dark_cyan", label: "Deep Cyan", value: "#0b5b6d" },
+  { id: "crimson", label: "Dark Crimson", value: "#8a0303" },
 ];
 
-function RealisticQRCode({ color = "var(--gold)" }: { color?: string }) {
+const PVC_FOIL_COLORS = [
+  { id: "white", label: "Frost White", value: "#d1d5db", light: "#f3f4f6" },
+  { id: "gold", label: "Premium Gold", value: "#cfa15a", light: "#e6c583" },
+  { id: "silver", label: "Bright Silver", value: "#cfcfcf", light: "#ffffff" },
+  { id: "rose", label: "Rose Gold", value: "#b76e79", light: "#e0bfb8" },
+  { id: "cyan", label: "Cyber Cyan", value: "#06b6d4", light: "#22d3ee" },
+  { id: "amber", label: "Warm Amber", value: "#f59e0b", light: "#fbbf24" },
+  { id: "black", label: "Midnight Black", value: "#0f172a", light: "#1e293b" },
+  { id: "navy", label: "Deep Navy", value: "#172554", light: "#1e3a8a" },
+];
+
+const PVC_ACCENT_COLORS = [
+  { id: "white", label: "Frost White", value: "#e5e7eb" },
+  { id: "gold", label: "Premium Gold", value: "#cfa15a" },
+  { id: "silver", label: "Bright Silver", value: "#cfcfcf" },
+  { id: "gray", label: "Subtle Gray", value: "#9ca3af" },
+  { id: "black", label: "Onyx Black", value: "#111827" },
+  { id: "emerald", label: "Deep Emerald", value: "#064e3b" },
+];
+
+const PVC_BACKGROUND_COLORS = [
+  { id: "matte-black", label: "Matte Black", value: "#303236" },
+  { id: "pure-white", label: "Pure White", value: "#f8f9fa" },
+  { id: "premium-gold", label: "Premium Gold", value: "#cfa15a" },
+  { id: "silver", label: "Bright Silver", value: "#e5e7eb" },
+  { id: "navy", label: "Midnight Navy", value: "#0f172a" },
+  { id: "rose", label: "Rose Gold", value: "#b76e79" },
+];
+
+const CARD_FONTS = [
+  { id: "sans", label: "Modern Sans", value: "font-sans", family: "sans-serif" },
+  { id: "serif", label: "Classic Serif", value: "font-serif", family: "serif" },
+  { id: "mono", label: "Tech Mono", value: "font-mono", family: "monospace" },
+];
+
+const PVC_BACKGROUNDS = [
+  { id: "bg1", label: "Brushed Metal", url: "/backgrounds/dark_brushed_metal_1783795668673.png" },
+  { id: "bg2", label: "Carbon Fiber", url: "/backgrounds/carbon_fiber_dark_1783795677260.png" },
+  { id: "bg3", label: "Dark Silk", url: "/backgrounds/dark_silk_waves_1783795686700.png" },
+  { id: "bg4", label: "Midnight Gradient", url: "/backgrounds/midnight_gradient_1783795711427.png" },
+  { id: "bg5", label: "Black Leather", url: "/backgrounds/black_leather_1783795721569.png" },
+  { id: "bg6", label: "Pure Obsidian", url: "/backgrounds/pure_black_obsidian_1783795738075.png" },
+];
+
+function RealisticQRCode({ color = "var(--gold)", bgColor = "#0e0f10", logoBg = "#f4efe6", logoMark = "#0e0f10", hideLogo = false }: { color?: string, bgColor?: string, logoBg?: string, logoMark?: string, hideLogo?: boolean }) {
   const size = 29;
   const cellSize = 100 / size;
   const rects = [];
@@ -36,8 +86,8 @@ function RealisticQRCode({ color = "var(--gold)" }: { color?: string }) {
       // Alignment (5x5) at 20,20
       if (isAnchor(20, 20, x, y, 5)) continue;
 
-      // Center logo cutout (11x11 in center to be safe)
-      if (x >= 9 && x <= 19 && y >= 9 && y <= 19) continue;
+      // Center logo cutout (11x11 in center to be safe) - skip if hideLogo
+      if (!hideLogo && x >= 9 && x <= 19 && y >= 9 && y <= 19) continue;
 
       // Timing patterns (dotted lines connecting anchors)
       if (x === 6 || y === 6) {
@@ -62,7 +112,7 @@ function RealisticQRCode({ color = "var(--gold)" }: { color?: string }) {
   const drawAnchor = (ax: number, ay: number) => (
     <g transform={`translate(${ax * cellSize}, ${ay * cellSize})`} fill={color}>
       <rect x="0" y="0" width={7 * cellSize} height={7 * cellSize} />
-      <rect x={1 * cellSize} y={1 * cellSize} width={5 * cellSize} height={5 * cellSize} fill="#0e0f10" />
+      <rect x={1 * cellSize} y={1 * cellSize} width={5 * cellSize} height={5 * cellSize} fill={bgColor} />
       <rect x={2 * cellSize} y={2 * cellSize} width={3 * cellSize} height={3 * cellSize} />
     </g>
   );
@@ -70,14 +120,14 @@ function RealisticQRCode({ color = "var(--gold)" }: { color?: string }) {
   const drawAlignment = (ax: number, ay: number) => (
     <g transform={`translate(${ax * cellSize}, ${ay * cellSize})`} fill={color}>
       <rect x="0" y="0" width={5 * cellSize} height={5 * cellSize} />
-      <rect x={1 * cellSize} y={1 * cellSize} width={3 * cellSize} height={3 * cellSize} fill="#0e0f10" />
+      <rect x={1 * cellSize} y={1 * cellSize} width={3 * cellSize} height={3 * cellSize} fill={bgColor} />
       <rect x={2 * cellSize} y={2 * cellSize} width={1 * cellSize} height={1 * cellSize} />
     </g>
   );
 
   return (
     <svg viewBox="0 0 100 100" className="w-full h-full">
-      <rect x="0" y="0" width="100" height="100" fill="#0e0f10" />
+      <rect x="0" y="0" width="100" height="100" fill={bgColor} />
 
       {rects}
 
@@ -86,13 +136,17 @@ function RealisticQRCode({ color = "var(--gold)" }: { color?: string }) {
       {drawAnchor(0, size - 7)}
       {drawAlignment(20, 20)}
 
-      <rect x={32} y={32} width={36} height={36} rx={5} fill="#f4efe6" />
-      <g transform="translate(40, 37) scale(0.42)">
-        <rect x="2" y="14" width="15" height="7" rx="2" fill="#0e0f10" />
-        <path d="M12 14 L26 14 L26 34 Q26 49 19 55 Q12 49 12 34 Z" fill="#0e0f10" />
-        <path d="M24 16 L39 3" stroke="#0e0f10" strokeWidth="7" strokeLinecap="round" />
-        <circle cx="40" cy="2" r="5.5" fill="#0e0f10" />
-      </g>
+      {!hideLogo && (
+        <>
+          <rect x={32} y={32} width={36} height={36} rx={5} fill={logoBg} />
+          <g transform="translate(40, 37) scale(0.42)">
+            <rect x="2" y="14" width="15" height="7" rx="2" fill={logoMark} />
+            <path d="M12 14 L26 14 L26 34 Q26 49 19 55 Q12 49 12 34 Z" fill={logoMark} />
+            <path d="M24 16 L39 3" stroke={logoMark} strokeWidth="7" strokeLinecap="round" />
+            <circle cx="40" cy="2" r="5.5" fill={logoMark} />
+          </g>
+        </>
+      )}
     </svg>
   );
 }
@@ -150,21 +204,59 @@ function PremiumHeroGraphic() {
 }
 
 export default function ThreeDCardCustomizer() {
-  const [activeTab, setActiveTab] = useState<"design" | "details">("design");
+  const searchParams = useSearchParams();
+  const productName = searchParams.get("product") || "Executive Metal";
+  const isPVC = productName.trim().toLowerCase().includes("pvc");
 
-  const [foil, setFoil] = useState(FOIL_COLORS[0]);
-  const [accentColor, setAccentColor] = useState(ACCENT_COLORS[0].value);
+  const currentFoils = isPVC ? PVC_FOIL_COLORS : FOIL_COLORS;
+  const currentAccents = isPVC ? PVC_ACCENT_COLORS : ACCENT_COLORS;
+
+  const [activeTab, setActiveTab] = useState<"design" | "details">("design");
+  const [designSubTab, setDesignSubTab] = useState<"colors" | "backgrounds">("colors");
+
+  const [foil, setFoil] = useState(currentFoils[0]);
+  const [accentColor, setAccentColor] = useState(currentAccents[0].value);
+  const [bgImage, setBgImage] = useState<string | null>(null);
+  const [bgColor, setBgColor] = useState(PVC_BACKGROUND_COLORS[0].value);
+  const [overlayOpacity, setOverlayOpacity] = useState(50);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setBgImage(url);
+    }
+  };
+
+  // Sync state if product changes via soft navigation
+  useEffect(() => {
+    setFoil(currentFoils[0]);
+    setAccentColor(currentAccents[0].value);
+  }, [isPVC]);
 
   const [displayName, setDisplayName] = useState("JOHN DOE");
   const [designation, setDesignation] = useState("CHIEF ARCHITECT");
+  const [email, setEmail] = useState("john@tagit.com");
+  const [phone, setPhone] = useState("+1 (555) 123-4567");
+  const [website, setWebsite] = useState("www.tagit.com");
+  const [fontStyle, setFontStyle] = useState(CARD_FONTS[0]);
 
   const [isFlipped, setIsFlipped] = useState(false);
 
-  return (
-    <div className="w-full max-w-[1400px] mx-auto p-4 sm:p-6 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+  // Pricing Logic
+  const basePrice = isPVC ? 1500 : 2500;
+  const customBgPrice = bgImage ? 500 : 0;
+  const totalPrice = basePrice + customBgPrice;
 
-      {/* LEFT: Card Preview Area */}
-      <div className="lg:col-span-7 flex flex-col items-center justify-center min-h-[600px] lg:h-[800px] bg-[radial-gradient(ellipse_at_center,_#ffffff_0%,_#f4f4f5_50%,_#e4e4e7_100%)] rounded-[2.5rem] p-10 relative overflow-hidden shadow-inner border border-white/60">
+  return (
+    <div className="w-full h-full max-w-[1600px] mx-auto px-6 py-6 lg:py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0">
+
+      {/* LEFT: 3D Preview (7 cols) */}
+      <div className="lg:col-span-7 flex flex-col items-center justify-center relative h-full min-h-0 bg-zinc-200/50 rounded-[3rem] overflow-hidden">
+        {/* Studio Ambient Glow */}
+        <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden">
+          <div className="w-[800px] h-[800px] bg-gradient-to-tr from-cyan-400/20 via-purple-500/10 to-emerald-400/20 rounded-full blur-3xl opacity-60 mix-blend-multiply animate-pulse" style={{ animationDuration: '4s' }}></div>
+        </div>
         <style>{`
           .card-container {
             perspective: 1000px;
@@ -346,65 +438,181 @@ export default function ThreeDCardCustomizer() {
 
             {/* FRONT FACE */}
             <div className="card-face">
-              <div className="front-content">
-                <PremiumHeroGraphic />
-                <div className="logo-group">
-                  <svg className="t-icon h-[140px] w-auto" viewBox="0 0 100 120" fill="none">
-                    {/* T Shape */}
-                    <path d="M 15 30 L 15 46 L 31 46 L 47 30 Z" fill="var(--gold)" />
-                    <path d="M 59 30 L 85 30 L 85 46 L 55 46 L 55 110 L 39 110 L 39 50 L 59 30 Z" fill="var(--gold)" />
-
-                    {/* Foreground lines (gold stroke) */}
-                    <g stroke="var(--gold)" strokeWidth="3" strokeLinecap="round">
-                      <line x1="55" y1="38" x2="85" y2="26" />
-                      <line x1="55" y1="38" x2="85" y2="50" />
-                      <line x1="85" y1="26" x2="85" y2="50" />
-                      <line x1="55" y1="38" x2="25" y2="70" />
-                    </g>
-
-                    {/* Nodes with dark background borders for embossed effect */}
-                    <circle cx="55" cy="38" r="9" fill="var(--gold)" stroke="#17181a" strokeWidth="4" />
-                    <circle cx="85" cy="26" r="7" fill="var(--gold)" stroke="#17181a" strokeWidth="3" />
-                    <circle cx="85" cy="50" r="7" fill="var(--gold)" stroke="#17181a" strokeWidth="3" />
-                    <circle cx="25" cy="70" r="5" fill="var(--gold)" stroke="#17181a" strokeWidth="3" />
-                  </svg>
-                  <div className="divider"></div>
-                  <div className="brand-name relative pr-[20px]">
-                    TAGIT
-                    <svg viewBox="0 0 36 36" className="absolute top-[2px] right-[0px] w-[18px] h-[18px] text-[var(--gold-light)] overflow-visible">
-                      <path d="M 4 12 A 6 6 0 0 1 4 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
-                      <path d="M 12 6 A 14 14 0 0 1 12 30" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
-                      <path d="M 20 0 A 22 22 0 0 1 20 36" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+              {isPVC ? (
+                <div 
+                  className={`w-full h-full relative overflow-hidden flex items-center justify-center ${fontStyle.value}`}
+                  style={{
+                    backgroundColor: bgColor,
+                    backgroundImage: bgImage ? `url(${bgImage})` : 'none',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                  }}
+                >
+                  {bgImage && <div className="absolute inset-0 z-0 pointer-events-none" style={{ backgroundColor: `rgba(0,0,0,${overlayOpacity / 100})` }}></div>}
+                  {/* Centered Logo */}
+                  <div className="flex items-center gap-3.5 relative z-10 -mt-2">
+                    <span className="text-[42px] font-light tracking-[0.25em]" style={{ color: foil.light }}>TAG IT</span>
+                    <svg className="w-[32px] h-[44px] overflow-visible mb-1" viewBox="0 0 46 52" fill="none">
+                      <path d="M8 21 A 7 7 0 0 1 8 31" stroke={foil.light} strokeWidth="3.5" strokeLinecap="round" />
+                      <path d="M16 15 A 15 15 0 0 1 16 37" stroke={foil.light} strokeWidth="3.5" strokeLinecap="round" />
+                      <path d="M24 9 A 23 23 0 0 1 24 43" stroke={foil.light} strokeWidth="3.5" strokeLinecap="round" />
+                      <path d="M32 3 A 31 31 0 0 1 32 49" stroke={foil.light} strokeWidth="3.5" strokeLinecap="round" />
                     </svg>
                   </div>
+
+                  {/* Bottom Left QR & Info */}
+                  <div className="absolute bottom-5 left-7 flex items-end gap-3.5 z-10">
+                    <div className="w-[58px] h-[58px] bg-transparent flex-shrink-0">
+                      <RealisticQRCode color={accentColor} bgColor="#303236" hideLogo={true} />
+                    </div>
+                    <div className="flex flex-col justify-end gap-2 pb-1.5">
+                      <svg className="w-[16px] h-[18px] overflow-visible" viewBox="0 0 46 52" fill="none">
+                        <path d="M8 21 A 7 7 0 0 1 8 31" stroke={accentColor} strokeWidth="4" strokeLinecap="round" />
+                        <path d="M16 15 A 15 15 0 0 1 16 37" stroke={accentColor} strokeWidth="4" strokeLinecap="round" />
+                        <path d="M24 9 A 23 23 0 0 1 24 43" stroke={accentColor} strokeWidth="4" strokeLinecap="round" />
+                      </svg>
+                      <span className="text-[8.5px] text-zinc-400 font-medium tracking-[0.08em] whitespace-nowrap opacity-90">
+                        SCAN OR TAP FOR CONTACT
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div className="cyberlink">CYBERLINK</div>
-              </div>
+              ) : (
+                <div 
+                  className={`front-content relative overflow-hidden ${fontStyle.value}`}
+                  style={{
+                    backgroundColor: bgColor,
+                    backgroundImage: bgImage ? `url(${bgImage})` : 'none',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                  }}
+                >
+                  {bgImage && <div className="absolute inset-0 z-0 pointer-events-none rounded-[18px]" style={{ backgroundColor: `rgba(0,0,0,${overlayOpacity / 100})` }}></div>}
+                  <PremiumHeroGraphic />
+                  <div className="logo-group relative z-10">
+                    <svg className="t-icon h-[140px] w-auto" viewBox="0 0 100 120" fill="none">
+                      {/* T Shape */}
+                      <path d="M 15 30 L 15 46 L 31 46 L 47 30 Z" fill="var(--gold)" />
+                      <path d="M 59 30 L 85 30 L 85 46 L 55 46 L 55 110 L 39 110 L 39 50 L 59 30 Z" fill="var(--gold)" />
+
+                      {/* Foreground lines (gold stroke) */}
+                      <g stroke="var(--gold)" strokeWidth="3" strokeLinecap="round">
+                        <line x1="55" y1="38" x2="85" y2="26" />
+                        <line x1="55" y1="38" x2="85" y2="50" />
+                        <line x1="85" y1="26" x2="85" y2="50" />
+                        <line x1="55" y1="38" x2="25" y2="70" />
+                      </g>
+
+                      {/* Nodes with dark background borders for embossed effect */}
+                      <circle cx="55" cy="38" r="9" fill="var(--gold)" stroke="#17181a" strokeWidth="4" />
+                      <circle cx="85" cy="26" r="7" fill="var(--gold)" stroke="#17181a" strokeWidth="3" />
+                      <circle cx="85" cy="50" r="7" fill="var(--gold)" stroke="#17181a" strokeWidth="3" />
+                      <circle cx="25" cy="70" r="5" fill="var(--gold)" stroke="#17181a" strokeWidth="3" />
+                    </svg>
+                    <div className="divider"></div>
+                    <div className="brand-name relative pr-[20px]">
+                      TAGIT
+                      <svg viewBox="0 0 36 36" className="absolute top-[2px] right-[0px] w-[18px] h-[18px] text-[var(--gold-light)] overflow-visible">
+                        <path d="M 4 12 A 6 6 0 0 1 4 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                        <path d="M 12 6 A 14 14 0 0 1 12 30" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                        <path d="M 20 0 A 22 22 0 0 1 20 36" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="cyberlink">CYBERLINK</div>
+                </div>
+              )}
             </div>
 
             {/* BACK FACE */}
             <div className="card-face card-face-back">
-              <div className="back-content">
-                <div className="info-sec">
-                  <div className="info-field">
-                    <div className="info-label">NAME</div>
-                    <div className="info-value">{displayName || "JOHN DOE"}</div>
+              {isPVC ? (
+                <div 
+                  className={`flex flex-col items-center justify-center h-full text-[#e0e2e5] relative ${fontStyle.value}`}
+                  style={{
+                    backgroundColor: bgColor,
+                    backgroundImage: bgImage ? `url(${bgImage})` : 'none',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                  }}
+                >
+                  {bgImage && <div className="absolute inset-0 z-0 pointer-events-none" style={{ backgroundColor: `rgba(0,0,0,${overlayOpacity / 100})` }}></div>}
+                  {/* Top Right Logo */}
+                  <div className="absolute top-6 right-8 flex items-center gap-2 opacity-90 z-10" style={{ color: foil.value }}>
+                    <svg className="w-[14px] h-[18px] overflow-visible" viewBox="0 0 46 52" fill="none">
+                      <circle cx="12" cy="26" r="5" fill="currentColor" />
+                      <path d="M26 14 A 14 14 0 0 1 26 38" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                      <path d="M40 4 A 26 26 0 0 1 40 48" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                    </svg>
+                    <span className="text-[12px] font-medium tracking-[0.15em]">TAGIT</span>
                   </div>
-                  <div className="info-field">
-                    <div className="info-label">DESIGNATION</div>
-                    <div className="info-value">{designation || "CHIEF ARCHITECT"}</div>
+
+                  {/* Centered Info */}
+                  <div className="text-center w-full flex flex-col items-center mt-3 relative z-10">
+                    <h3 className="text-[23px] tracking-[0.12em] uppercase mb-1.5 font-semibold" style={{ color: foil.light }}>{displayName || "JOHN DOE"}</h3>
+                    <p className="text-[10.5px] tracking-[0.2em] uppercase mb-6 font-medium" style={{ color: foil.value }}>{designation || "CHIEF ARCHITECT"}</p>
+                    <div className="text-[11.5px] text-[#a1a8b3] space-y-1.5 font-medium tracking-wide">
+                      {email && <p>{email.toLowerCase()}</p>}
+                      {phone && <p>{phone}</p>}
+                      {website && <p>{website.toLowerCase()}</p>}
+                    </div>
+
+                    {/* Bottom Center NFC - In document flow now */}
+                    <div className="mt-5 flex justify-center w-full">
+                      <svg viewBox="0 0 100 100" className="w-[36px] h-[36px]" style={{ color: accentColor }} fill="none" stroke="currentColor">
+                        {/* Dot */}
+                        <circle cx="50" cy="50" r="7.5" fill="currentColor" stroke="none" />
+                        {/* Inner Left Arc */}
+                        <path d="M36 34 A 20 20 0 0 0 36 66" strokeWidth="4.5" strokeLinecap="round" />
+                        {/* Inner Right Arc */}
+                        <path d="M64 34 A 20 20 0 0 1 64 66" strokeWidth="4.5" strokeLinecap="round" />
+                        {/* Outer Left Arc */}
+                        <path d="M22 18 A 38 38 0 0 0 22 82" strokeWidth="4.5" strokeLinecap="round" />
+                        {/* Outer Right Arc */}
+                        <path d="M78 18 A 38 38 0 0 1 78 82" strokeWidth="4.5" strokeLinecap="round" />
+                      </svg>
+                    </div>
                   </div>
                 </div>
-                <div className="qr-wrap">
-                  <RealisticQRCode />
+              ) : (
+                <div 
+                  className={`back-content relative overflow-hidden ${fontStyle.value}`}
+                  style={{
+                    backgroundColor: bgColor,
+                    backgroundImage: bgImage ? `url(${bgImage})` : 'none',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                  }}
+                >
+                  {bgImage && <div className="absolute inset-0 z-0 pointer-events-none rounded-[18px]" style={{ backgroundColor: `rgba(0,0,0,${overlayOpacity / 100})` }}></div>}
+                  <div className="info-sec relative z-10">
+                    <div className="info-field">
+                      <div className="info-label">NAME</div>
+                      <div className="info-value">{displayName || "JOHN DOE"}</div>
+                    </div>
+                    <div className="info-field">
+                      <div className="info-label">DESIGNATION</div>
+                      <div className="info-value">{designation || "CHIEF ARCHITECT"}</div>
+                    </div>
+                    {(email || phone || website) && (
+                      <div className="mt-4 text-[10px] space-y-1 text-[#a1a8b3] font-medium tracking-wide">
+                        {email && <div>{email.toLowerCase()}</div>}
+                        {phone && <div>{phone}</div>}
+                        {website && <div>{website.toLowerCase()}</div>}
+                      </div>
+                    )}
+                  </div>
+                  <div className="qr-wrap relative z-10">
+                    <RealisticQRCode />
+                  </div>
+                  <svg className="nfc-icon overflow-visible flex-shrink-0" viewBox="0 0 46 52" fill="none">
+                    <path d="M8 21 A 7 7 0 0 1 8 31" stroke="var(--cyan)" strokeWidth="4.5" strokeLinecap="round" />
+                    <path d="M16 15 A 15 15 0 0 1 16 37" stroke="var(--cyan)" strokeWidth="4.5" strokeLinecap="round" />
+                    <path d="M24 9 A 23 23 0 0 1 24 43" stroke="var(--cyan)" strokeWidth="4.5" strokeLinecap="round" />
+                    <path d="M32 3 A 31 31 0 0 1 32 49" stroke="var(--cyan)" strokeWidth="4.5" strokeLinecap="round" />
+                  </svg>
                 </div>
-                <svg className="nfc-icon overflow-visible flex-shrink-0" viewBox="0 0 46 52" fill="none">
-                  <path d="M8 21 A 7 7 0 0 1 8 31" stroke="var(--cyan)" strokeWidth="4.5" strokeLinecap="round" />
-                  <path d="M16 15 A 15 15 0 0 1 16 37" stroke="var(--cyan)" strokeWidth="4.5" strokeLinecap="round" />
-                  <path d="M24 9 A 23 23 0 0 1 24 43" stroke="var(--cyan)" strokeWidth="4.5" strokeLinecap="round" />
-                  <path d="M32 3 A 31 31 0 0 1 32 49" stroke="var(--cyan)" strokeWidth="4.5" strokeLinecap="round" />
-                </svg>
-              </div>
+              )}
             </div>
           </div>
         </div>
@@ -413,64 +621,199 @@ export default function ThreeDCardCustomizer() {
       </div>
 
       {/* RIGHT: Controls Panel */}
-      <div className="lg:col-span-5 flex flex-col h-full lg:h-[800px]">
-        <div className="bg-white/80 backdrop-blur-2xl rounded-[2.5rem] border border-white shadow-[0_30px_80px_-20px_rgba(0,0,0,0.08)] ring-1 ring-neutral-200/50 flex flex-col h-full overflow-hidden">
-          <div className="p-8 pb-0 border-b border-zinc-100">
-            <h2 className="text-3xl font-extrabold text-zinc-900 mb-2 tracking-tight">Studio</h2>
-            <p className="text-zinc-500 text-sm mb-8 font-medium">Customize your exact design.</p>
-            <div className="flex space-x-2 bg-zinc-100 p-1.5 rounded-2xl mb-8">
+      <div className="lg:col-span-5 flex flex-col h-full min-h-0 pb-2 lg:pb-0">
+        <div className="bg-white/60 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] ring-1 ring-neutral-900/5 flex flex-col h-full overflow-hidden relative">
+
+          <div className="p-6 lg:p-8 pb-4 border-b border-neutral-900/5 shrink-0 z-10 relative">
+            <h2 className="text-3xl font-black text-neutral-900 tracking-tight mb-1">Studio</h2>
+            <p className="text-neutral-500 text-sm mb-8 font-medium">Fine-tune your premium {productName} card.</p>
+
+            {/* Apple-style Segmented Control */}
+            <div className="flex bg-neutral-900/5 p-1.5 rounded-[1.25rem] relative">
               {[
-                { id: "design", label: "Colors & Finish", icon: Settings2 },
+                { id: "design", label: "Design", icon: Settings2 },
                 { id: "details", label: "Engraving", icon: User },
               ].map((tab) => (
-                <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} className={`flex-1 flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all ${activeTab === tab.id ? "bg-white text-black shadow-sm border border-zinc-200" : "text-zinc-500 hover:text-zinc-800 hover:bg-zinc-200/50 border border-transparent"}`}>
-                  <tab.icon className="w-5 h-5 mb-0.5" />{tab.label}
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`flex-1 relative flex items-center justify-center gap-2 py-3 px-2 rounded-xl text-xs font-bold tracking-widest uppercase transition-colors z-10 ${activeTab === tab.id ? "text-neutral-900" : "text-neutral-500 hover:text-neutral-700"}`}
+                >
+                  {activeTab === tab.id && (
+                    <motion.div layoutId="active-tab" className="absolute inset-0 bg-white rounded-xl shadow-sm border border-neutral-900/5" transition={{ type: "spring", bounce: 0.2, duration: 0.6 }} />
+                  )}
+                  <tab.icon className="w-4 h-4 relative z-10" />
+                  <span className="relative z-10">{tab.label}</span>
                 </button>
               ))}
             </div>
           </div>
-          <div className="p-8 flex-grow overflow-y-auto space-y-10 custom-scrollbar">
+          <div className="p-6 lg:p-8 flex-1 overflow-y-auto space-y-10 scrollbar-hide relative" style={{ maskImage: "linear-gradient(to bottom, black 90%, transparent 100%)", WebkitMaskImage: "linear-gradient(to bottom, black 90%, transparent 100%)" }}>
             {activeTab === "design" && (
-              <div className="space-y-8 animate-in fade-in duration-300">
-                <div>
-                  <label className="block text-xs font-bold text-zinc-400 uppercase tracking-widest mb-4">Foil Overlay (Logos/QR)</label>
-                  <div className="grid grid-cols-1 gap-3">
-                    {FOIL_COLORS.map((fc) => (
-                      <button key={fc.id} onClick={() => setFoil(fc)} className={`relative py-4 px-5 rounded-2xl border flex items-center justify-start gap-4 text-sm font-semibold transition-all ${foil.id === fc.id ? "border-zinc-500 bg-zinc-50 text-black shadow-sm" : "border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300 hover:text-zinc-800"}`}>
-                        <div className="w-5 h-5 rounded-full border border-black/10 shadow-inner" style={{ backgroundColor: fc.value }}></div>{fc.label}
-                      </button>
-                    ))}
-                  </div>
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
+                
+                {/* Mini Nav for Design Tab */}
+                <div className="flex bg-neutral-900/5 p-1 rounded-full relative w-fit mx-auto mb-2">
+                  {[
+                    { id: "colors", label: "Colors" },
+                    { id: "backgrounds", label: "Backgrounds" },
+                  ].map((subTab) => (
+                    <button
+                      key={subTab.id}
+                      onClick={() => setDesignSubTab(subTab.id as any)}
+                      className={`relative px-6 py-2 rounded-full text-[10px] font-black tracking-[0.2em] uppercase transition-colors z-10 ${designSubTab === subTab.id ? "text-neutral-900" : "text-neutral-500 hover:text-neutral-700"}`}
+                    >
+                      {designSubTab === subTab.id && (
+                        <motion.div layoutId="active-sub-tab" className="absolute inset-0 bg-white rounded-full shadow-sm border border-neutral-900/5" transition={{ type: "spring", bounce: 0.2, duration: 0.6 }} />
+                      )}
+                      <span className="relative z-10">{subTab.label}</span>
+                    </button>
+                  ))}
                 </div>
-                <div>
-                  <label className="block text-xs font-bold text-zinc-400 uppercase tracking-widest mb-4">Neon Accent (Circuit/WiFi)</label>
-                  <div className="grid grid-cols-2 gap-3">
-                    {ACCENT_COLORS.map((ac) => (
-                      <button key={ac.id} onClick={() => setAccentColor(ac.value)} className={`py-3 px-4 rounded-2xl border flex flex-col items-center justify-center gap-2 text-xs font-bold transition-all ${accentColor === ac.value ? "border-zinc-500 bg-zinc-50 text-black shadow-sm" : "border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300"}`}>
-                        <div className="w-6 h-6 rounded-full shadow-inner" style={{ backgroundColor: ac.value }}></div>{ac.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
+
+                {/* Colors View */}
+                {designSubTab === "colors" && (
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="space-y-10">
+                    <div>
+                      <label className="block text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] mb-4 pl-1">
+                        {isPVC ? "Primary Color (Logos/Text)" : "Foil Overlay (Logos/QR)"}
+                      </label>
+                      <div className="grid grid-cols-3 gap-3">
+                        {currentFoils.map((fc) => (
+                          <button key={fc.id} onClick={() => setFoil(fc)} className={`relative py-3 px-2 rounded-[1.25rem] border flex flex-col items-center justify-center gap-2.5 text-[11px] text-center leading-tight font-bold transition-all group ${foil.id === fc.id ? "border-neutral-900 ring-1 ring-neutral-900 bg-white text-neutral-900 shadow-md" : "border-neutral-900/10 bg-white/50 text-neutral-600 hover:border-neutral-900/30 hover:bg-white"}`}>
+                            <div className="w-7 h-7 rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] border border-black/10 group-hover:scale-110 transition-transform" style={{ backgroundColor: fc.value }}></div>
+                            <span>{fc.label}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] mb-4 pl-1">
+                        {isPVC ? "Accent Color (QR/NFC)" : "Neon Accent (Circuit/WiFi)"}
+                      </label>
+                      <div className="grid grid-cols-2 gap-3">
+                        {currentAccents.map((ac) => (
+                          <button key={ac.id} onClick={() => setAccentColor(ac.value)} className={`relative py-4 px-4 rounded-[1.25rem] border flex flex-col items-center justify-center gap-3 text-xs font-bold transition-all group ${accentColor === ac.value ? "border-neutral-900 ring-1 ring-neutral-900 bg-white text-neutral-900 shadow-md" : "border-neutral-900/10 bg-white/50 text-neutral-600 hover:border-neutral-900/30 hover:bg-white"}`}>
+                            <div className="w-7 h-7 rounded-full shadow-[inset_0_2px_6px_rgba(0,0,0,0.3)] border border-white/20 group-hover:scale-110 transition-transform" style={{ backgroundColor: ac.value }}></div>{ac.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Backgrounds View */}
+                {designSubTab === "backgrounds" && (
+                  <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+                    <div>
+                      <label className="block text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] mb-4 pl-1">
+                        Base Color
+                      </label>
+                      <div className="grid grid-cols-3 gap-3">
+                        {PVC_BACKGROUND_COLORS.map((bgC) => (
+                          <button key={bgC.id} onClick={() => { setBgColor(bgC.value); setBgImage(null); }} className={`relative py-3 px-2 rounded-[1.25rem] border flex flex-col items-center justify-center gap-2.5 text-[11px] text-center leading-tight font-bold transition-all group ${bgColor === bgC.value && !bgImage ? "border-neutral-900 ring-1 ring-neutral-900 bg-white text-neutral-900 shadow-md" : "border-neutral-900/10 bg-white/50 text-neutral-600 hover:border-neutral-900/30 hover:bg-white"}`}>
+                            <div className="w-7 h-7 rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] border border-black/10 group-hover:scale-110 transition-transform" style={{ backgroundColor: bgC.value }}></div>
+                            <span>{bgC.label}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between items-center mb-4 pl-1 pr-1">
+                        <div className="flex items-center gap-2">
+                          <label className="block text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em]">
+                            Card Background
+                          </label>
+                          <span className="text-[9px] font-bold text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded-full uppercase tracking-wider">+ LKR 500</span>
+                        </div>
+                        {bgImage && (
+                          <button onClick={() => setBgImage(null)} className="text-[10px] font-bold text-red-500 hover:text-red-400 uppercase tracking-wider transition-colors">
+                            Clear
+                          </button>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-3 gap-3 mb-3">
+                        {PVC_BACKGROUNDS.map((bg) => (
+                          <button key={bg.id} onClick={() => setBgImage(bg.url)} className={`relative h-14 rounded-xl border overflow-hidden transition-all group ${bgImage === bg.url ? "border-neutral-900 ring-2 ring-neutral-900 shadow-md" : "border-neutral-900/10 hover:border-neutral-900/40"}`}>
+                            <img src={bg.url} alt={bg.label} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                          </button>
+                        ))}
+                      </div>
+                      <label className="relative flex items-center justify-center w-full py-3 px-4 rounded-[1.25rem] border border-dashed border-neutral-900/20 bg-white/40 hover:bg-white text-xs font-bold text-neutral-600 transition-colors cursor-pointer group">
+                        <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                        <span className="group-hover:text-neutral-900 transition-colors">Upload Custom Image</span>
+                      </label>
+                      {bgImage && (
+                        <div className="mt-5 px-1 bg-white/40 p-4 rounded-2xl border border-neutral-900/5">
+                          <div className="flex justify-between items-center mb-3">
+                            <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em]">
+                              Overlay Darkness
+                            </label>
+                            <span className="text-[10px] font-bold text-neutral-500">{overlayOpacity}%</span>
+                          </div>
+                          <input 
+                            type="range" 
+                            min="0" 
+                            max="90" 
+                            value={overlayOpacity} 
+                            onChange={(e) => setOverlayOpacity(Number(e.target.value))}
+                            className="w-full h-1.5 bg-neutral-200 rounded-lg appearance-none cursor-pointer accent-neutral-900" 
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </motion.div>
             )}
             {activeTab === "details" && (
-              <div className="space-y-6 animate-in fade-in duration-300">
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                 <div>
-                  <label className="block text-xs font-bold text-zinc-400 uppercase tracking-widest mb-3">Cardholder Name</label>
-                  <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value.toUpperCase())} className="w-full px-5 py-4 bg-zinc-50 border border-zinc-200 rounded-2xl focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 outline-none transition-all text-black font-medium placeholder-zinc-400" placeholder="e.g. JOHN DOE" />
+                  <label className="block text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] mb-4 pl-1">
+                    Typography Style
+                  </label>
+                  <div className="grid grid-cols-3 gap-3 mb-2">
+                    {CARD_FONTS.map((font) => (
+                      <button key={font.id} onClick={() => setFontStyle(font)} className={`relative py-3 px-2 rounded-[1.25rem] border flex items-center justify-center text-[11px] font-bold transition-all group ${fontStyle.id === font.id ? "border-neutral-900 ring-1 ring-neutral-900 bg-white text-neutral-900 shadow-md" : "border-neutral-900/10 bg-white/50 text-neutral-600 hover:border-neutral-900/30 hover:bg-white"} ${font.value}`}>
+                        {font.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-xs font-bold text-zinc-400 uppercase tracking-widest mb-3">Official Title</label>
-                  <input type="text" value={designation} onChange={(e) => setDesignation(e.target.value.toUpperCase())} className="w-full px-5 py-4 bg-zinc-50 border border-zinc-200 rounded-2xl focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 outline-none transition-all text-black font-medium placeholder-zinc-400" placeholder="e.g. CHIEF ARCHITECT" />
+                <div className="relative group">
+                  <label className="absolute -top-2.5 left-4 bg-white/80 backdrop-blur-md px-2 text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em] rounded">Cardholder Name</label>
+                  <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value.toUpperCase())} className="w-full px-5 py-4 bg-white/60 border border-neutral-900/10 rounded-[1.25rem] focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 outline-none transition-all text-neutral-900 font-bold placeholder-neutral-300 shadow-sm" placeholder="e.g. JOHN DOE" />
                 </div>
-              </div>
+                <div className="relative group">
+                  <label className="absolute -top-2.5 left-4 bg-white/80 backdrop-blur-md px-2 text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em] rounded">Official Title</label>
+                  <input type="text" value={designation} onChange={(e) => setDesignation(e.target.value.toUpperCase())} className="w-full px-5 py-4 bg-white/60 border border-neutral-900/10 rounded-[1.25rem] focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 outline-none transition-all text-neutral-900 font-bold placeholder-neutral-300 shadow-sm" placeholder="e.g. CHIEF ARCHITECT" />
+                </div>
+                <div className="relative group">
+                  <label className="absolute -top-2.5 left-4 bg-white/80 backdrop-blur-md px-2 text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em] rounded">Email (Optional)</label>
+                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full px-5 py-4 bg-white/60 border border-neutral-900/10 rounded-[1.25rem] focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 outline-none transition-all text-neutral-900 font-bold placeholder-neutral-300 shadow-sm" placeholder="e.g. john@tagit.com" />
+                </div>
+                <div className="relative group">
+                  <label className="absolute -top-2.5 left-4 bg-white/80 backdrop-blur-md px-2 text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em] rounded">Mobile No (Optional)</label>
+                  <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full px-5 py-4 bg-white/60 border border-neutral-900/10 rounded-[1.25rem] focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 outline-none transition-all text-neutral-900 font-bold placeholder-neutral-300 shadow-sm" placeholder="e.g. +1 (555) 123-4567" />
+                </div>
+                <div className="relative group">
+                  <label className="absolute -top-2.5 left-4 bg-white/80 backdrop-blur-md px-2 text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em] rounded">Web Address (Optional)</label>
+                  <input type="text" value={website} onChange={(e) => setWebsite(e.target.value)} className="w-full px-5 py-4 bg-white/60 border border-neutral-900/10 rounded-[1.25rem] focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 outline-none transition-all text-neutral-900 font-bold placeholder-neutral-300 shadow-sm" placeholder="e.g. www.tagit.com" />
+                </div>
+              </motion.div>
             )}
           </div>
-          <div className="p-8 bg-zinc-50 border-t border-zinc-200 mt-auto">
-            <button className="w-full py-5 rounded-2xl font-bold text-white uppercase tracking-widest text-sm bg-black hover:bg-zinc-800 shadow-xl shadow-black/10 transition-all hover:scale-[1.02] active:scale-[0.98]">
-              Finalize Design
-            </button>
+          <div className="p-4 shrink-0 mt-auto bg-transparent z-10 pt-2">
+            <div className="flex items-center justify-between bg-white/80 backdrop-blur-2xl p-2 pl-6 rounded-[1.75rem] border border-neutral-900/10 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)]">
+              <div>
+                <p className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] mb-0.5">Total Investment</p>
+                <p className="text-xl font-bold text-neutral-900 tracking-tight">LKR {totalPrice.toLocaleString()}</p>
+              </div>
+              <button className="px-8 py-4 rounded-2xl font-black text-white uppercase tracking-[0.15em] text-xs bg-neutral-900 hover:bg-black shadow-md transition-all hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
+                Finalize Design
+              </button>
+            </div>
           </div>
         </div>
       </div>

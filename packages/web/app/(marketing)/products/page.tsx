@@ -3,8 +3,9 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, Variants, AnimatePresence } from "framer-motion";
-import { CheckCircle, Zap, Shield, SmartphoneNfc } from "lucide-react";
+import { CheckCircle, Zap, Shield, SmartphoneNfc, Loader2 } from "lucide-react";
 import Image from "next/image";
+import { PremiumHeroGraphic } from "@/components/ThreeDCardCustomizer";
 
 const staggerContainer: Variants = {
   hidden: { opacity: 0 },
@@ -53,7 +54,7 @@ export default function ProductsPage() {
   const handleCustomizeClick = (productName: string) => {
     setLoadingProduct(productName);
     setTimeout(() => {
-      router.push("/customize");
+      router.push(`/customize?product=${encodeURIComponent(productName)}`);
     }, 1200);
   };
 
