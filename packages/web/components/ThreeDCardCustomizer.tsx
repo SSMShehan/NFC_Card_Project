@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Settings2, User } from "lucide-react";
-import { motion } from "framer-motion";
-import { useSearchParams } from "next/navigation";
+import { Settings2, User, CheckCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useSearchParams, useRouter } from "next/navigation";
 
 // --- OPTIONS ---
 const FOIL_COLORS = [
@@ -205,6 +205,7 @@ function PremiumHeroGraphic() {
 
 export default function ThreeDCardCustomizer() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const productName = searchParams.get("product") || "Executive Metal";
   const isPVC = productName.trim().toLowerCase().includes("pvc");
 
@@ -242,11 +243,34 @@ export default function ThreeDCardCustomizer() {
   const [fontStyle, setFontStyle] = useState(CARD_FONTS[0]);
 
   const [isFlipped, setIsFlipped] = useState(false);
+  const [isCheckoutMode, setIsCheckoutMode] = useState(false);
 
   // Pricing Logic
   const basePrice = isPVC ? 1500 : 2500;
   const customBgPrice = bgImage ? 500 : 0;
   const totalPrice = basePrice + customBgPrice;
+
+  const handleBuyNow = () => {
+    const cardConfig = {
+      productName,
+      basePrice,
+      customBgPrice,
+      totalPrice,
+      foilColor: foil.value,
+      foilLabel: foil.label,
+      accentColor,
+      bgColor,
+      bgImage,
+      displayName,
+      designation,
+      email,
+      phone,
+      website,
+      fontStyle: fontStyle.label,
+    };
+    localStorage.setItem("tagit_order_config", JSON.stringify(cardConfig));
+    router.push("/order");
+  };
 
   return (
     <div className="w-full h-full max-w-[1600px] mx-auto px-6 py-6 lg:py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0">
@@ -624,9 +648,19 @@ export default function ThreeDCardCustomizer() {
       <div className="lg:col-span-5 flex flex-col h-full min-h-0 pb-2 lg:pb-0">
         <div className="bg-white/60 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] ring-1 ring-neutral-900/5 flex flex-col h-full overflow-hidden relative">
 
-          <div className="p-6 lg:p-8 pb-4 border-b border-neutral-900/5 shrink-0 z-10 relative">
-            <h2 className="text-3xl font-black text-neutral-900 tracking-tight mb-1">Studio</h2>
-            <p className="text-neutral-500 text-sm mb-8 font-medium">Fine-tune your premium {productName} card.</p>
+          <AnimatePresence mode="wait">
+            {!isCheckoutMode ? (
+              <motion.div
+                key="studio"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.3 }}
+                className="flex flex-col h-full min-h-0"
+              >
+                <div className="p-6 lg:p-8 pb-4 border-b border-neutral-900/5 shrink-0 z-10 relative">
+                  <h2 className="text-3xl font-black text-neutral-900 tracking-tight mb-1">Studio</h2>
+                  <p className="text-neutral-500 text-sm mb-8 font-medium">Fine-tune your premium {productName} card.</p>
 
             {/* Apple-style Segmented Control */}
             <div className="flex bg-neutral-900/5 p-1.5 rounded-[1.25rem] relative">
@@ -830,12 +864,82 @@ export default function ThreeDCardCustomizer() {
                 <p className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] mb-0.5">Total Investment</p>
                 <p className="text-xl font-bold text-neutral-900 tracking-tight">LKR {totalPrice.toLocaleString()}</p>
               </div>
-              <button className="px-8 py-4 rounded-2xl font-black text-white uppercase tracking-[0.15em] text-xs bg-neutral-900 hover:bg-black shadow-md transition-all hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 relative overflow-hidden group">
+              <button onClick={() => setIsCheckoutMode(true)} className="px-8 py-4 rounded-2xl font-black text-white uppercase tracking-[0.15em] text-xs bg-neutral-900 hover:bg-black shadow-md transition-all hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 relative overflow-hidden group">
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
                 Finalize Design
               </button>
             </div>
           </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="checkout"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+                className="flex flex-col h-full min-h-0 p-6 lg:p-10"
+              >
+                <div className="flex items-center gap-4 mb-10 shrink-0">
+                  <button onClick={() => setIsCheckoutMode(false)} className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center hover:bg-neutral-200 transition-colors">
+                    <svg className="w-5 h-5 text-neutral-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                  </button>
+                  <h2 className="text-4xl font-black text-neutral-900 tracking-tight">Order Summary</h2>
+                </div>
+
+                <div className="flex-1 overflow-y-auto scrollbar-hide pb-10 space-y-6">
+                  <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-neutral-900/5 space-y-6">
+                    <div className="flex justify-between items-center">
+                      <div className="flex flex-col">
+                        <span className="text-neutral-900 font-bold text-lg">{productName}</span>
+                        <span className="text-neutral-500 text-sm font-medium">Base Card</span>
+                      </div>
+                      <span className="font-bold text-lg text-neutral-900">LKR {basePrice.toLocaleString()}</span>
+                    </div>
+                    {customBgPrice > 0 && (
+                      <div className="flex justify-between items-center">
+                        <div className="flex flex-col">
+                          <span className="text-neutral-900 font-bold text-lg">Custom Background</span>
+                          <span className="text-neutral-500 text-sm font-medium">Add-on</span>
+                        </div>
+                        <span className="font-bold text-lg text-neutral-900">LKR {customBgPrice.toLocaleString()}</span>
+                      </div>
+                    )}
+                    
+                    <div className="w-full h-px bg-neutral-100 my-4"></div>
+                    
+                    <div className="flex justify-between items-end">
+                      <div className="flex flex-col">
+                        <span className="text-neutral-500 font-bold uppercase tracking-widest text-xs mb-1">Total</span>
+                        <span className="text-neutral-900 font-black text-4xl tracking-tight">LKR {totalPrice.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-emerald-50 rounded-2xl p-4 border border-emerald-100 flex items-start gap-4">
+                    <CheckCircle className="w-6 h-6 text-emerald-500 shrink-0" />
+                    <div>
+                      <h4 className="font-bold text-emerald-900 text-sm mb-1">Free Lifetime Access</h4>
+                      <p className="text-emerald-700 text-xs font-medium leading-relaxed">Your card includes our powerful digital profile software with absolutely zero monthly fees.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-auto shrink-0 space-y-4 pt-4 border-t border-neutral-900/5">
+                  <button onClick={handleBuyNow} className="w-full bg-neutral-900 hover:bg-black text-white py-5 rounded-[1.5rem] font-black tracking-widest uppercase text-sm transition-all shadow-xl hover:-translate-y-1 hover:shadow-2xl active:translate-y-0 flex items-center justify-center gap-3 group">
+                    Buy Now
+                    <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                  </button>
+                  <button className="w-full bg-white border-2 border-neutral-200 hover:border-neutral-900 hover:bg-neutral-900 hover:text-white text-neutral-900 py-5 rounded-[1.5rem] font-black tracking-widest uppercase text-sm transition-all flex items-center justify-center gap-3">
+                    Add to Cart
+                  </button>
+                  <button onClick={() => setIsCheckoutMode(false)} className="w-full text-neutral-400 hover:text-neutral-900 text-xs font-bold uppercase tracking-widest py-4 transition-colors">
+                    ← Edit Design
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
