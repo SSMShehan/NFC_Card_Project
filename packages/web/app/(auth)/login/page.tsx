@@ -4,14 +4,15 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, EyeOff, Loader2, AlertCircle, ArrowRight, Lock, Mail, CheckCircle2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, AlertCircle, ArrowRight, Lock, Mail, CheckCircle2, Shield, User as UserIcon, Zap } from "lucide-react";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../../../context/AuthContext";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, loginWithGoogle, loginWithApple } = useAuth();
+  const { login, demoLogin, loginWithGoogle, loginWithApple } = useAuth();
 
+  const [selectedRole, setSelectedRole] = useState<'USER' | 'ADMIN'>('USER');
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -20,14 +21,21 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  const handlePostLoginRedirect = (overrideRole?: 'USER' | 'ADMIN') => {
+    setIsSuccess(true);
+    const target = (overrideRole === 'ADMIN' || selectedRole === 'ADMIN' || email.trim().toLowerCase().startsWith('admin'))
+      ? '/admin'
+      : '/products';
+    setTimeout(() => router.push(target), 700);
+  };
+
   const googleLoginPopup = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       setIsSubmitting(true);
       setError(null);
       const res = await loginWithGoogle(tokenResponse.access_token);
       if (res.success) {
-        setIsSuccess(true);
-        setTimeout(() => router.push("/products"), 700);
+        handlePostLoginRedirect();
       } else {
         setError(res.error || "Google sign-in failed.");
         setIsSubmitting(false);
@@ -44,8 +52,7 @@ export default function LoginPage() {
       setError(null);
       const res = await loginWithGoogle("mock_google_token_" + Date.now());
       if (res.success) {
-        setIsSuccess(true);
-        setTimeout(() => router.push("/products"), 700);
+        handlePostLoginRedirect();
       } else {
         setError(res.error || "Google demo login failed.");
         setIsSubmitting(false);
@@ -67,8 +74,7 @@ export default function LoginPage() {
       setError(null);
       const res = await loginWithApple("mock_apple_token_" + Date.now());
       if (res.success) {
-        setIsSuccess(true);
-        setTimeout(() => router.push("/products"), 700);
+        handlePostLoginRedirect();
       } else {
         setError(res.error || "Apple demo login failed.");
         setIsSubmitting(false);
@@ -91,8 +97,7 @@ export default function LoginPage() {
           setError(null);
           const res = await loginWithApple(data.authorization.id_token, data.user);
           if (res.success) {
-            setIsSuccess(true);
-            setTimeout(() => router.push("/products"), 700);
+            handlePostLoginRedirect();
           } else {
             setError(res.error || "Apple sign-in failed.");
             setIsSubmitting(false);
@@ -105,6 +110,19 @@ export default function LoginPage() {
       }
     } else {
       setError("Apple Sign-In SDK loading... Please check internet connection and try again.");
+    }
+  };
+
+  const handleDemoQuickLogin = async (targetRole: 'USER' | 'ADMIN') => {
+    if (isSubmitting) return;
+    setError(null);
+    setIsSubmitting(true);
+    const result = await demoLogin(targetRole);
+    if (result.success) {
+      handlePostLoginRedirect(targetRole);
+    } else {
+      setError(result.error || `Failed to log in as ${targetRole}.`);
+      setIsSubmitting(false);
     }
   };
 
@@ -123,10 +141,7 @@ export default function LoginPage() {
     const result = await login({ email: email.trim(), password });
 
     if (result.success) {
-      setIsSuccess(true);
-      setTimeout(() => {
-        router.push("/products");
-      }, 700);
+      handlePostLoginRedirect();
     } else {
       setError(result.error || "Invalid credentials. Please try again.");
       setIsSubmitting(false);
@@ -149,6 +164,75 @@ export default function LoginPage() {
           Sign in to access your digital NFC card dashboard and analytics.
         </p>
       </div>
+
+      {/* Role Mode Selector (Normal User vs Administrator) */}
+      <div className="mb-6 p-1.5 rounded-2xl bg-neutral-100 border border-neutral-200/80 grid grid-cols-2 gap-1.5 shadow-inner">
+        <button
+          type="button"
+          onClick={() => setSelectedRole('USER')}
+          className={`py-2.5 px-3 rounded-xl text-xs font-black flex items-center justify-center gap-2 transition-all ${
+            selectedRole === 'USER'
+              ? 'bg-white text-neutral-950 shadow-sm border border-neutral-200/60 scale-[1.01]'
+              : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200/50'
+          }`}
+        >
+          <UserIcon className={`w-3.5 h-3.5 ${selectedRole === 'USER' ? 'text-rose-600' : 'text-neutral-500'}`} />
+          Normal User
+        </button>
+        <button
+          type="button"
+          onClick={() => setSelectedRole('ADMIN')}
+          className={`py-2.5 px-3 rounded-xl text-xs font-black flex items-center justify-center gap-2 transition-all ${
+            selectedRole === 'ADMIN'
+              ? 'bg-neutral-950 text-white shadow-md border border-neutral-800 scale-[1.01]'
+              : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200/50'
+          }`}
+        >
+          <Shield className={`w-3.5 h-3.5 ${selectedRole === 'ADMIN' ? 'text-amber-400' : 'text-neutral-500'}`} />
+          Admin Portal
+        </button>
+      </div>
+
+      {selectedRole === 'ADMIN' && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          className="mb-5 p-3.5 rounded-2xl bg-gradient-to-r from-neutral-950 via-neutral-900 to-neutral-950 border border-amber-500/30 text-white shadow-xl flex items-center justify-between gap-3"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0">
+              <Shield className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="text-xs font-black text-amber-300 tracking-wide uppercase">Admin Control Center</div>
+              <div className="text-[11px] text-neutral-300 font-medium">Manage platform cards, users & analytics</div>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => handleDemoQuickLogin('ADMIN')}
+            disabled={isSubmitting || isSuccess}
+            className="py-2 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-neutral-950 font-black text-xs flex items-center gap-1.5 shrink-0 shadow-sm transition-transform active:scale-95 cursor-pointer disabled:opacity-50"
+          >
+            <Zap className="w-3.5 h-3.5 fill-current" />
+            Instant Admin Demo
+          </button>
+        </motion.div>
+      )}
+
+      {selectedRole === 'USER' && (
+        <div className="mb-4 flex items-center justify-end">
+          <button
+            type="button"
+            onClick={() => handleDemoQuickLogin('USER')}
+            disabled={isSubmitting || isSuccess}
+            className="py-1.5 px-3 rounded-lg bg-neutral-100 hover:bg-neutral-200 border border-neutral-200 text-neutral-700 font-extrabold text-[11px] flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+          >
+            <Zap className="w-3 h-3 text-rose-500 fill-current" />
+            Quick Demo User Login
+          </button>
+        </div>
+      )}
 
       {/* Error Alert Banner */}
       <AnimatePresence>
