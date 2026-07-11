@@ -23,14 +23,6 @@ export function NavbarAuthButtons() {
 
     return (
       <div className="relative flex items-center gap-3">
-        {/* Tier Badge if Premium */}
-        {user.subscriptionTier !== "FREE" && (
-          <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-rose-500/10 via-orange-500/10 to-amber-500/10 text-rose-600 border border-rose-300/60 text-[11px] font-bold tracking-wider uppercase shadow-xs">
-            <Sparkles className="w-3.5 h-3.5 text-rose-500 fill-rose-500 animate-pulse" />
-            {user.subscriptionTier}
-          </span>
-        )}
-
         {/* Glowing Gradient Ring Container around User Pill */}
         <div className="p-[1.5px] rounded-full bg-gradient-to-r from-rose-500 via-orange-500 to-amber-500 shadow-md shadow-rose-500/15 hover:shadow-lg hover:shadow-rose-500/25 transition-all">
           <button
