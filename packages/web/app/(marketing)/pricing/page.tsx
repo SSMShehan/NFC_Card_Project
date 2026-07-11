@@ -2,8 +2,11 @@
 
 import { motion } from "framer-motion";
 import { Check, X } from "lucide-react";
+import { useTheme } from "../../../context/ThemeContext";
 
 export default function PricingPage() {
+  const { isLight } = useTheme();
+
   return (
     <main className="py-24 px-6 max-w-7xl mx-auto">
       <motion.div 
@@ -12,10 +15,10 @@ export default function PricingPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-neutral-950 mb-6">
+        <h1 className={`text-4xl md:text-6xl font-extrabold tracking-tight mb-6 transition-colors ${isLight ? "text-neutral-950" : "text-white"}`}>
           Simple, transparent <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-orange-500">pricing.</span>
         </h1>
-        <p className="text-lg text-neutral-500">
+        <p className={`text-lg transition-colors ${isLight ? "text-neutral-500" : "text-neutral-400"}`}>
           Start for free, upgrade when you need more. The physical card is a one-time purchase.
         </p>
       </motion.div>
@@ -26,13 +29,17 @@ export default function PricingPage() {
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2, duration: 0.6 }}
-          className="bg-white border border-neutral-200 rounded-[2rem] p-10 shadow-xl shadow-neutral-200 flex flex-col"
+          className={`rounded-[2rem] p-10 transition-all flex flex-col border ${
+            isLight
+              ? "bg-white border-neutral-200 shadow-lg shadow-neutral-100"
+              : "bg-neutral-900/90 border-neutral-800 text-white shadow-md shadow-black/30"
+          }`}
         >
           <div className="mb-8">
-            <h3 className="text-2xl font-bold text-neutral-950 mb-2">Standard Profile</h3>
+            <h3 className={`text-2xl font-bold mb-2 ${isLight ? "text-neutral-950" : "text-white"}`}>Standard Profile</h3>
             <p className="text-neutral-400 mb-6">Everything you need to network digitally.</p>
             <div className="flex items-baseline gap-1">
-              <span className="text-5xl font-extrabold text-neutral-950">LKR 0</span>
+              <span className={`text-5xl font-extrabold ${isLight ? "text-neutral-950" : "text-white"}`}>LKR 0</span>
               <span className="text-neutral-400 font-medium">/forever</span>
             </div>
           </div>
@@ -48,7 +55,7 @@ export default function PricingPage() {
             ].map((feature, i) => (
               <div key={i} className="flex items-center gap-3">
                 <Check className="w-5 h-5 text-rose-500 shrink-0" />
-                <span className="text-neutral-600">{feature}</span>
+                <span className={isLight ? "text-neutral-600" : "text-neutral-300"}>{feature}</span>
               </div>
             ))}
             {[
@@ -63,7 +70,11 @@ export default function PricingPage() {
             ))}
           </div>
 
-          <button className="w-full py-4 rounded-xl font-bold text-lg bg-rose-50 text-rose-600 hover:bg-indigo-100 transition-colors">
+          <button className={`w-full py-4 rounded-xl font-bold text-lg transition-colors ${
+            isLight
+              ? "bg-rose-50 text-rose-600 hover:bg-rose-100"
+              : "bg-white/10 text-rose-400 hover:bg-white/15"
+          }`}>
             Get Started Free
           </button>
         </motion.div>
@@ -73,7 +84,11 @@ export default function PricingPage() {
           initial={{ opacity: 0, x: 30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3, duration: 0.6 }}
-          className="bg-neutral-950 text-white border border-neutral-800 rounded-[2rem] p-10 shadow-2xl relative flex flex-col overflow-hidden"
+          className={`rounded-[2rem] p-10 relative flex flex-col overflow-hidden transition-all border ${
+            isLight
+              ? "bg-neutral-950 text-white border-neutral-800 shadow-xl shadow-neutral-300/40"
+              : "bg-neutral-900/95 text-white border-rose-500/30 shadow-lg shadow-black/40"
+          }`}
         >
           {/* Decorative glow */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/20 rounded-full blur-[80px]" />
