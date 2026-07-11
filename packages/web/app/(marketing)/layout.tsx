@@ -1,6 +1,7 @@
 import { SmartphoneNfc } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import { NavbarAuthButtons } from "../../components/NavbarAuthButtons";
 
 export default function MarketingLayout({
   children,
@@ -27,9 +28,7 @@ export default function MarketingLayout({
             <Link href="/pricing" className="hover:text-rose-500 transition-colors">Pricing</Link>
             <Link href="/about" className="hover:text-rose-500 transition-colors">About Us</Link>
           </nav>
-          <button className="px-5 py-2.5 rounded-full bg-neutral-950 text-white text-sm font-semibold hover:bg-neutral-900 transition-colors shadow-md shadow-neutral-200">
-            Get Your Card
-          </button>
+          <NavbarAuthButtons />
         </div>
       </header>
 

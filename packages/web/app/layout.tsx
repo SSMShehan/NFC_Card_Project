@@ -6,6 +6,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import { Providers } from '../context/Providers';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -52,7 +53,7 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         {/* Atmospheric background — fixed, behind all content */}
         <div className="nexus-bg" aria-hidden="true" />
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
