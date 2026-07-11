@@ -2,16 +2,19 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { User as UserIcon, LogOut, ChevronDown, Sparkles } from "lucide-react";
+import { User as UserIcon, LogOut, ChevronDown, Sparkles, Sun, Moon } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 
 export function NavbarAuthButtons() {
   const { user, isAuthenticated, isLoading, logout } = useAuth();
+  const { isLight, toggleTheme } = useTheme();
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   if (isLoading) {
     return (
       <div className="flex items-center gap-4 animate-pulse">
+        <div className="w-9 h-9 rounded-full bg-neutral-200" />
         <div className="w-14 h-8 rounded-full bg-neutral-200" />
         <div className="w-24 h-9 rounded-full bg-neutral-300" />
       </div>
@@ -23,6 +26,24 @@ export function NavbarAuthButtons() {
 
     return (
       <div className="relative flex items-center gap-3">
+        {/* Dark / Light Theme Switcher */}
+        <button
+          type="button"
+          onClick={toggleTheme}
+          className={`p-2 rounded-full border transition-all flex items-center justify-center shrink-0 group ${
+            isLight
+              ? "bg-neutral-100 hover:bg-neutral-200 border-neutral-300 text-neutral-700 shadow-2xs hover:scale-105"
+              : "bg-white/10 hover:bg-white/20 border-white/15 text-amber-300 shadow-2xs hover:scale-105"
+          }`}
+          title="Toggle Light / Dark Mode"
+        >
+          {isLight ? (
+            <Moon className="w-4 h-4 text-indigo-600 transition-transform duration-300 group-hover:-rotate-12" />
+          ) : (
+            <Sun className="w-4 h-4 text-amber-400 transition-transform duration-300 group-hover:rotate-12" />
+          )}
+        </button>
+
         {/* Glowing Gradient Ring Container around User Pill */}
         <div className="p-[1.5px] rounded-full bg-gradient-to-r from-rose-500 via-orange-500 to-amber-500 shadow-md shadow-rose-500/15 hover:shadow-lg hover:shadow-rose-500/25 transition-all">
           <button
@@ -95,10 +116,28 @@ export function NavbarAuthButtons() {
   }
 
   return (
-    <div className="flex items-center gap-4 sm:gap-6">
+    <div className="flex items-center gap-3 sm:gap-4">
+      {/* Dark / Light Theme Switcher */}
+      <button
+        type="button"
+        onClick={toggleTheme}
+        className={`p-2 rounded-full border transition-all flex items-center justify-center shrink-0 group ${
+          isLight
+            ? "bg-neutral-100 hover:bg-neutral-200 border-neutral-300 text-neutral-700 shadow-2xs hover:scale-105"
+            : "bg-white/10 hover:bg-white/20 border-white/15 text-amber-300 shadow-2xs hover:scale-105"
+        }`}
+        title="Toggle Light / Dark Mode"
+      >
+        {isLight ? (
+          <Moon className="w-4 h-4 text-indigo-600 transition-transform duration-300 group-hover:-rotate-12" />
+        ) : (
+          <Sun className="w-4 h-4 text-amber-400 transition-transform duration-300 group-hover:rotate-12" />
+        )}
+      </button>
+
       <Link
         href="/login"
-        className="text-sm font-bold text-neutral-600 hover:text-rose-600 transition-colors py-2 relative group"
+        className="text-sm font-bold text-neutral-600 hover:text-rose-600 transition-colors py-2 relative group ml-1"
       >
         <span>Sign In</span>
         <span className="absolute bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-rose-500 to-orange-500 transition-all duration-300 group-hover:w-full" />

@@ -151,7 +151,7 @@ function RealisticQRCode({ color = "var(--gold)", bgColor = "#0e0f10", logoBg = 
   );
 }
 
-function PremiumHeroGraphic() {
+export function PremiumHeroGraphic() {
   const dots = [];
   for (let x = 15; x <= 135; x += 8) {
     for (let y = 35; y <= 155; y += 8) {

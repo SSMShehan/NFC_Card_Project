@@ -1,21 +1,26 @@
+"use client";
+
 import { SmartphoneNfc, Sparkles } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { NavbarAuthButtons } from "../../components/NavbarAuthButtons";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function MarketingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { isLight } = useTheme();
+
   return (
-    <div className="relative z-10 min-h-screen bg-white text-neutral-950 font-sans overflow-hidden">
+    <div className={`relative z-10 min-h-screen font-sans overflow-hidden transition-colors duration-300 ${isLight ? "bg-white text-neutral-950" : "bg-neutral-950 text-neutral-100"}`}>
       {/* Abstract light background gradients */}
-      <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-rose-50 blur-[120px] -z-10 animate-pulse-slow" />
-      <div className="absolute top-[20%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-orange-50 blur-[120px] -z-10 animate-float" />
+      <div className={`absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full blur-[120px] -z-10 animate-pulse-slow ${isLight ? "bg-rose-50" : "bg-rose-950/20"}`} />
+      <div className={`absolute top-[20%] right-[-10%] w-[40vw] h-[40vw] rounded-full blur-[120px] -z-10 animate-float ${isLight ? "bg-orange-50" : "bg-orange-950/20"}`} />
 
       {/* ── Ultra-Premium Edge-to-Edge Glassmorphic Navbar ── */}
-      <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white/90 backdrop-blur-2xl border-b border-neutral-200/80 shadow-xs transition-all">
+      <header className={`fixed top-0 left-0 right-0 z-50 w-full backdrop-blur-2xl border-b transition-all ${isLight ? "bg-white/90 border-neutral-200/80 shadow-xs" : "bg-neutral-950/90 border-neutral-800/80 shadow-lg shadow-black/40"}`}>
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between gap-4">
           
           {/* 1. Brand Logo Emblem (Icon Eke Idan) */}
@@ -28,7 +33,7 @@ export default function MarketingLayout({
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-1.5">
-                <span className="text-xl font-black tracking-tight text-neutral-950 group-hover:text-rose-600 transition-colors">
+                <span className={`text-xl font-black tracking-tight transition-colors ${isLight ? "text-neutral-950 group-hover:text-rose-600" : "text-white group-hover:text-rose-400"}`}>
                   TAGIT
                 </span>
                 <span className="hidden sm:inline-block px-1.5 py-0.5 rounded-md bg-rose-500/10 text-rose-600 text-[9px] font-black tracking-widest uppercase border border-rose-500/20">
@@ -42,22 +47,22 @@ export default function MarketingLayout({
           </Link>
 
           {/* 2. Center Interactive Navigation Pill Bar (Piliwelata Links) */}
-          <nav className="hidden lg:flex items-center gap-1 bg-neutral-100/80 p-1.5 rounded-full border border-neutral-200/60 shadow-inner text-xs font-bold text-neutral-600">
+          <nav className={`hidden lg:flex items-center gap-1 p-1.5 rounded-full border shadow-inner text-xs font-bold transition-all ${isLight ? "bg-neutral-100/80 border-neutral-200/60 text-neutral-600" : "bg-white/5 border-white/10 text-neutral-300"}`}>
             <Link
               href="/products"
-              className="px-4 py-2 rounded-full hover:bg-white hover:text-neutral-950 hover:shadow-sm transition-all"
+              className={`px-4 py-2 rounded-full transition-all ${isLight ? "hover:bg-white hover:text-neutral-950 hover:shadow-sm" : "hover:bg-white/10 hover:text-white"}`}
             >
               Products
             </Link>
             <Link
               href="/pricing"
-              className="px-4 py-2 rounded-full hover:bg-white hover:text-neutral-950 hover:shadow-sm transition-all"
+              className={`px-4 py-2 rounded-full transition-all ${isLight ? "hover:bg-white hover:text-neutral-950 hover:shadow-sm" : "hover:bg-white/10 hover:text-white"}`}
             >
               Pricing
             </Link>
             <Link
               href="/customize"
-              className="px-4 py-2 rounded-full hover:bg-white hover:text-neutral-950 hover:shadow-sm transition-all flex items-center gap-1.5 text-rose-600 group/nav"
+              className={`px-4 py-2 rounded-full transition-all flex items-center gap-1.5 text-rose-600 group/nav ${isLight ? "hover:bg-white hover:text-rose-700 hover:shadow-sm" : "hover:bg-white/10 hover:text-rose-400"}`}
             >
               <span>NFC Studio</span>
               <span className="px-1.5 py-0.5 rounded-full bg-rose-500 text-white text-[9px] font-black group-hover/nav:scale-105 transition-transform">
@@ -66,7 +71,7 @@ export default function MarketingLayout({
             </Link>
             <Link
               href="/about"
-              className="px-4 py-2 rounded-full hover:bg-white hover:text-neutral-950 hover:shadow-sm transition-all"
+              className={`px-4 py-2 rounded-full transition-all ${isLight ? "hover:bg-white hover:text-neutral-950 hover:shadow-sm" : "hover:bg-white/10 hover:text-white"}`}
             >
               About Us
             </Link>
@@ -85,19 +90,19 @@ export default function MarketingLayout({
       </div>
 
       {/* ── Footer ── */}
-      <footer className="border-t border-neutral-200 bg-neutral-50 py-12 px-6">
+      <footer className={`border-t py-12 px-6 transition-colors ${isLight ? "border-neutral-200 bg-neutral-50" : "border-neutral-800/80 bg-neutral-950"}`}>
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2">
             <SmartphoneNfc className="text-rose-500 w-5 h-5" />
-            <span className="text-lg font-bold text-neutral-950">TAGIT</span>
+            <span className={`text-lg font-bold ${isLight ? "text-neutral-950" : "text-white"}`}>TAGIT</span>
           </div>
           <div className="text-neutral-400 text-sm">
             © {new Date().getFullYear()} TAGIT Technologies. All rights reserved.
           </div>
           <div className="flex items-center gap-4 text-sm font-medium text-neutral-400">
-            <Link href="#" className="hover:text-neutral-950">Privacy</Link>
-            <Link href="#" className="hover:text-neutral-950">Terms</Link>
-            <Link href="#" className="hover:text-neutral-950">Support</Link>
+            <Link href="#" className={isLight ? "hover:text-neutral-950" : "hover:text-white"}>Privacy</Link>
+            <Link href="#" className={isLight ? "hover:text-neutral-950" : "hover:text-white"}>Terms</Link>
+            <Link href="#" className={isLight ? "hover:text-neutral-950" : "hover:text-white"}>Support</Link>
           </div>
         </div>
       </footer>
