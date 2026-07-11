@@ -28,6 +28,7 @@ export interface User {
   id: string;
   email: string;
   subscriptionTier: 'FREE' | 'PREMIUM' | 'CORPORATE';
+  role?: 'USER' | 'ADMIN' | 'SUPER_ADMIN';
   profile?: Profile | null;
 }
 

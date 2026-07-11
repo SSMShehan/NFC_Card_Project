@@ -11,6 +11,7 @@ export interface JwtPayload {
   email: string;
   profileId: string;
   subscriptionTier: SubscriptionTier;
+  role?: string;
 }
 
 const JWT_SECRET = process.env.JWT_SECRET ?? 'fallback-dev-secret-change-me';

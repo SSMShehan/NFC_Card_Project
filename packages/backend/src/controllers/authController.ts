@@ -76,6 +76,7 @@ export async function register(
       email: user.email,
       profileId: user.profile!.id,
       subscriptionTier: user.subscriptionTier,
+      role: user.role,
     });
     const refreshToken = signRefreshToken(user.id);
 
@@ -87,6 +88,7 @@ export async function register(
         user: {
           id: user.id,
           email: user.email,
+          role: user.role,
           subscriptionTier: user.subscriptionTier,
           profile: user.profile,
         },
@@ -134,6 +136,7 @@ export async function login(
       email: user.email,
       profileId: user.profile!.id,
       subscriptionTier: user.subscriptionTier,
+      role: user.role,
     });
     const refreshToken = signRefreshToken(user.id);
 
@@ -143,6 +146,7 @@ export async function login(
       user: {
         id: user.id,
         email: user.email,
+        role: user.role,
         subscriptionTier: user.subscriptionTier,
         profile: user.profile,
       },
@@ -184,6 +188,7 @@ export async function refresh(
       email: user.email,
       profileId: user.profile.id,
       subscriptionTier: user.subscriptionTier,
+      role: user.role,
     });
 
     sendSuccess(res, { accessToken: newAccessToken }, 'Token refreshed successfully.');
@@ -209,6 +214,7 @@ export async function me(
       select: {
         id: true,
         email: true,
+        role: true,
         subscriptionTier: true,
         createdAt: true,
         profile: {
@@ -314,6 +320,7 @@ export async function googleAuth(
       email: user.email,
       profileId: user.profile!.id,
       subscriptionTier: user.subscriptionTier,
+      role: user.role,
     });
     const refreshToken = signRefreshToken(user.id);
 
@@ -323,6 +330,7 @@ export async function googleAuth(
       user: {
         id: user.id,
         email: user.email,
+        role: user.role,
         subscriptionTier: user.subscriptionTier,
         profile: user.profile,
       },
@@ -395,6 +403,7 @@ export async function appleAuth(
       email: user.email,
       profileId: user.profile!.id,
       subscriptionTier: user.subscriptionTier,
+      role: user.role,
     });
     const refreshToken = signRefreshToken(user.id);
 
@@ -404,6 +413,7 @@ export async function appleAuth(
       user: {
         id: user.id,
         email: user.email,
+        role: user.role,
         subscriptionTier: user.subscriptionTier,
         profile: user.profile,
       },

@@ -54,6 +54,16 @@ export function NavbarAuthButtons() {
             </div>
 
             <div className="py-1">
+              {(user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') && (
+                <Link
+                  href="/admin"
+                  onClick={() => setDropdownOpen(false)}
+                  className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-semibold hover:bg-amber-500/10 text-amber-600 hover:text-amber-700 transition-colors border-b border-neutral-100"
+                >
+                  <span className="text-base">📊</span>
+                  Admin Dashboard
+                </Link>
+              )}
               {profileSlug && (
                 <Link
                   href={`/p/${profileSlug}`}
