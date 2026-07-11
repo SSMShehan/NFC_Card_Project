@@ -181,6 +181,11 @@ export async function updateAdminUser(id: string, data: { role?: string; subscri
   return response.data;
 }
 
+export async function createAdminUser(data: any) {
+  const response = await apiClient.post<ApiResponse<any>>('/admin/users', data);
+  return response.data;
+}
+
 export async function getAdminVerifications() {
   const response = await apiClient.get<ApiResponse<any[]>>('/admin/verifications');
   return response.data;

@@ -5,6 +5,7 @@
 // ============================================================
 
 import { Request, Response } from 'express';
+import bcrypt from 'bcryptjs';
 import { prisma } from '../config/database';
 import { sendSuccess, sendError } from '../utils/responseHelper';
 import { OrderStatus, NfcCardStatus, SubscriptionTier, UserRole, VerificationStatus } from '@prisma/client';
@@ -481,6 +482,57 @@ export async function updateUserRoleTier(req: Request, res: Response): Promise<v
   } catch (error) {
     console.error('updateUserRoleTier error:', error);
     sendError(res, 'Failed to update user parameters.', 500);
+  }
+}
+
+export async function createAdminUser(req: Request, res: Response): Promise<void> {
+  try {
+    const { email, password, username, displayName } = req.body;
+
+    if (!email || !password || !username || !displayName) {
+      sendError(res, 'All fields (email, password, username, displayName) are required.', 400);
+      return;
+    }
+
+    // Check if email already exists
+    const existingEmail = await prisma.user.findUnique({ where: { email } });
+    if (existingEmail) {
+      sendError(res, 'Email already registered.', 400);
+      return;
+    }
+
+    // Check if username already exists
+    const existingUsername = await prisma.profile.findUnique({ where: { username } });
+    if (existingUsername) {
+      sendError(res, 'Username already taken.', 400);
+      return;
+    }
+
+    // Hash password with cost factor 12
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    const newAdmin = await prisma.user.create({
+      data: {
+        email,
+        passwordHash,
+        role: UserRole.ADMIN,
+        subscriptionTier: SubscriptionTier.FREE,
+        authProvider: 'EMAIL',
+        profile: {
+          create: {
+            username,
+            displayName,
+            status: 'ACTIVE',
+          },
+        },
+      },
+      include: { profile: true },
+    });
+
+    sendSuccess(res, newAdmin, 'New admin user created successfully.', 201);
+  } catch (error) {
+    console.error('createAdminUser error:', error);
+    sendError(res, 'Failed to create new admin user.', 500);
   }
 }
 

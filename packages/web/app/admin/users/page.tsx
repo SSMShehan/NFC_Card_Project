@@ -2,13 +2,24 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { getAdminUsers, updateAdminUser } from '../../../services/api';
+import { getAdminUsers, updateAdminUser, createAdminUser } from '../../../services/api';
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+
+  // New Admin creation states
+  const [modalOpen, setModalOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    username: '',
+    displayName: '',
+  });
 
   useEffect(() => {
     fetchUsers();
@@ -68,6 +79,26 @@ export default function AdminUsersPage() {
     }
   };
 
+  const handleCreateAdmin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setErrorMsg(null);
+    try {
+      const res = await createAdminUser(formData);
+      if (res.success) {
+        setModalOpen(false);
+        setFormData({ email: '', password: '', username: '', displayName: '' });
+        fetchUsers();
+      } else {
+        setErrorMsg(res.error || res.message || 'Failed to create admin.');
+      }
+    } catch (err: any) {
+      setErrorMsg(err?.response?.data?.error || 'Failed to create admin.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const filteredUsers = users.filter((u) => {
     const q = searchQuery.toLowerCase();
     return (
@@ -87,6 +118,15 @@ export default function AdminUsersPage() {
           </h1>
           <p className="text-sm text-neutral-400 mt-1">Manage user subscriptions, elevate accounts to VIP Corporate & moderate status.</p>
         </div>
+        <button
+          onClick={() => {
+            setErrorMsg(null);
+            setModalOpen(true);
+          }}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 text-black font-bold text-sm shadow-lg shadow-amber-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all self-start sm:self-auto"
+        >
+          <span>+ Add New Admin</span>
+        </button>
       </div>
 
       {/* Search Bar */}
@@ -233,6 +273,96 @@ export default function AdminUsersPage() {
           </div>
         )}
       </div>
+
+      {/* ── Add Admin User Modal ─────────────────────────────── */}
+      {modalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
+          <div className="bg-[#14141F] border border-white/10 rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl shadow-black">
+            <div className="flex items-center justify-between pb-4 border-b border-white/10">
+              <h3 className="text-lg font-bold text-white">Add New Admin User</h3>
+              <button
+                onClick={() => setModalOpen(false)}
+                className="text-neutral-400 hover:text-white p-1"
+              >
+                ✕
+              </button>
+            </div>
+
+            {errorMsg && (
+              <div className="mt-4 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-mono">
+                ⚠️ {errorMsg}
+              </div>
+            )}
+
+            <form onSubmit={handleCreateAdmin} className="space-y-4 mt-5">
+              <div>
+                <label className="block text-xs font-mono uppercase text-neutral-400 mb-1.5">Email Address</label>
+                <input
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="admin.alex@tagit.com"
+                  className="w-full bg-[#0B0B11] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-amber-500 outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono uppercase text-neutral-400 mb-1.5">Temporary Password</label>
+                <input
+                  type="password"
+                  required
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  placeholder="••••••••"
+                  className="w-full bg-[#0B0B11] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-amber-500 outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono uppercase text-neutral-400 mb-1.5">Unique Username</label>
+                <input
+                  type="text"
+                  required
+                  value={formData.username}
+                  onChange={(e) => setFormData({ ...formData, username: e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '') })}
+                  placeholder="alex_admin"
+                  className="w-full bg-[#0B0B11] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white font-mono focus:border-amber-500 outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono uppercase text-neutral-400 mb-1.5">Display Name</label>
+                <input
+                  type="text"
+                  required
+                  value={formData.displayName}
+                  onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
+                  placeholder="Alex Mercer (Operations)"
+                  className="w-full bg-[#0B0B11] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-amber-500 outline-none"
+                />
+              </div>
+
+              <div className="pt-4 flex items-center justify-end gap-3 border-t border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setModalOpen(false)}
+                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-medium text-neutral-300 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="px-6 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 text-black font-bold text-xs shadow-lg shadow-amber-500/20 disabled:opacity-50"
+                >
+                  {submitting ? 'Creating...' : 'Create Admin Account'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
