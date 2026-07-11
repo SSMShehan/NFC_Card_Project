@@ -32,15 +32,15 @@ export function NavbarAuthButtons() {
           onClick={toggleTheme}
           className={`p-2 rounded-full border transition-all flex items-center justify-center shrink-0 group ${
             isLight
-              ? "bg-neutral-100 hover:bg-neutral-200 border-neutral-300 text-neutral-700 shadow-2xs hover:scale-105"
-              : "bg-white/10 hover:bg-white/20 border-white/15 text-amber-300 shadow-2xs hover:scale-105"
+              ? "bg-neutral-100 hover:bg-neutral-200 border-neutral-300 text-amber-500 shadow-2xs hover:scale-105"
+              : "bg-white/10 hover:bg-white/20 border-white/15 text-indigo-300 shadow-2xs hover:scale-105"
           }`}
           title="Toggle Light / Dark Mode"
         >
           {isLight ? (
-            <Moon className="w-4 h-4 text-indigo-600 transition-transform duration-300 group-hover:-rotate-12" />
+            <Sun className="w-4 h-4 text-amber-500 transition-transform duration-300 group-hover:rotate-12" />
           ) : (
-            <Sun className="w-4 h-4 text-amber-400 transition-transform duration-300 group-hover:rotate-12" />
+            <Moon className="w-4 h-4 text-indigo-400 transition-transform duration-300 group-hover:-rotate-12" />
           )}
         </button>
 
@@ -123,15 +123,15 @@ export function NavbarAuthButtons() {
         onClick={toggleTheme}
         className={`p-2 rounded-full border transition-all flex items-center justify-center shrink-0 group ${
           isLight
-            ? "bg-neutral-100 hover:bg-neutral-200 border-neutral-300 text-neutral-700 shadow-2xs hover:scale-105"
-            : "bg-white/10 hover:bg-white/20 border-white/15 text-amber-300 shadow-2xs hover:scale-105"
+            ? "bg-neutral-100 hover:bg-neutral-200 border-neutral-300 text-amber-500 shadow-2xs hover:scale-105"
+            : "bg-white/10 hover:bg-white/20 border-white/15 text-indigo-300 shadow-2xs hover:scale-105"
         }`}
         title="Toggle Light / Dark Mode"
       >
         {isLight ? (
-          <Moon className="w-4 h-4 text-indigo-600 transition-transform duration-300 group-hover:-rotate-12" />
+          <Sun className="w-4 h-4 text-amber-500 transition-transform duration-300 group-hover:rotate-12" />
         ) : (
-          <Sun className="w-4 h-4 text-amber-400 transition-transform duration-300 group-hover:rotate-12" />
+          <Moon className="w-4 h-4 text-indigo-400 transition-transform duration-300 group-hover:-rotate-12" />
         )}
       </button>
 

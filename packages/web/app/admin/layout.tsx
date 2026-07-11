@@ -339,12 +339,12 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
               onClick={toggleTheme}
               className={`p-2 rounded-xl border transition-all ${
                 isLight
-                  ? 'bg-neutral-100 hover:bg-neutral-200 border-neutral-300 text-neutral-700 shadow-sm'
-                  : 'bg-white/5 hover:bg-white/10 border-white/10 text-neutral-300 hover:text-white'
+                  ? 'bg-neutral-100 hover:bg-neutral-200 border-neutral-300 text-amber-500 shadow-sm'
+                  : 'bg-white/5 hover:bg-white/10 border-white/10 text-indigo-300 hover:text-white'
               }`}
               title="Toggle Light / Dark Mode"
             >
-              {isLight ? <Moon className="w-4 h-4 text-indigo-600" /> : <Sun className="w-4 h-4 text-amber-400" />}
+              {isLight ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4 text-indigo-400" />}
             </button>
 
             <Link

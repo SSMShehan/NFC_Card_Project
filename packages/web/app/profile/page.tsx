@@ -214,13 +214,13 @@ export default function ProfilePage() {
             >
               {isLight ? (
                 <>
-                  <Moon className="w-3.5 h-3.5 text-indigo-600" />
-                  <span className="hidden md:inline">Dark Mode</span>
+                  <Sun className="w-3.5 h-3.5 text-amber-500" />
+                  <span className="hidden md:inline">Light Mode</span>
                 </>
               ) : (
                 <>
-                  <Sun className="w-3.5 h-3.5 text-amber-400" />
-                  <span className="hidden md:inline">Light Mode</span>
+                  <Moon className="w-3.5 h-3.5 text-indigo-400" />
+                  <span className="hidden md:inline">Dark Mode</span>
                 </>
               )}
             </button>
