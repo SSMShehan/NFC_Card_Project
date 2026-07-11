@@ -6,6 +6,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import { Providers } from '../context/Providers';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -48,11 +49,12 @@ export default function RootLayout({
         {/* Preconnect to Google Fonts for performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <script src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js" async defer />
       </head>
       <body className="font-sans antialiased">
         {/* Atmospheric background — fixed, behind all content */}
         <div className="nexus-bg" aria-hidden="true" />
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

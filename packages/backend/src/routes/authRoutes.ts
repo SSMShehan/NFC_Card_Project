@@ -3,7 +3,7 @@
 // ============================================================
 
 import { Router } from 'express';
-import { register, login, refresh, me } from '../controllers/authController';
+import { register, login, refresh, me, googleAuth, appleAuth } from '../controllers/authController';
 import { authMiddleware } from '../middlewares/authMiddleware';
 
 export const authRouter = Router();
@@ -13,6 +13,12 @@ authRouter.post('/register', register);
 
 /** POST /api/v1/auth/login */
 authRouter.post('/login', login);
+
+/** POST /api/v1/auth/google — Social SSO */
+authRouter.post('/google', googleAuth);
+
+/** POST /api/v1/auth/apple — Social SSO */
+authRouter.post('/apple', appleAuth);
 
 /** POST /api/v1/auth/refresh */
 authRouter.post('/refresh', refresh);

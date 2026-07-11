@@ -1,5 +1,5 @@
 // ============================================================
-//  NEXUS — Prisma Schema
+//  TAGIT — Prisma Schema
 //  Database: PostgreSQL (Supabase)
 //  ORM:      Prisma 5
 // ============================================================
@@ -66,7 +66,10 @@ enum LinkPlatform {
 model User {
   id               String           @id @default(cuid())
   email            String           @unique
-  passwordHash     String
+  passwordHash     String?          // Made optional for OAuth accounts
+  googleId         String?          @unique // Google OAuth subject ID
+  appleId          String?          @unique // Apple OAuth subject ID
+  authProvider     String           @default("EMAIL") // EMAIL, GOOGLE, APPLE
   subscriptionTier SubscriptionTier @default(FREE)
 
   // Relations

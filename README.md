@@ -1,4 +1,4 @@
-# ⚡ NEXUS — NFC Digital Business Card Ecosystem
+# ⚡ TAGIT — NFC Digital Business Card Ecosystem
 
 A premium, production-ready **P2P NFC Digital Business Card** platform.
 
@@ -7,7 +7,7 @@ A premium, production-ready **P2P NFC Digital Business Card** platform.
 ## Architecture
 
 ```
-nexus-nfc-ecosystem/
+tagit-nfc-ecosystem/
 ├── packages/
 │   ├── backend/     # Node.js · Express · Prisma ORM · PostgreSQL (Supabase)
 │   ├── web/         # Next.js 14 App Router · Tailwind CSS (NFC tap landing page)
@@ -34,7 +34,7 @@ nexus-nfc-ecosystem/
 
 ```bash
 git clone <repo-url>
-cd nexus-nfc-ecosystem
+cd tagit-nfc-ecosystem
 npm install
 ```
 
@@ -110,4 +110,4 @@ See each package's `.env.example` for full documentation.
 
 ## License
 
-MIT © NEXUS Team
+MIT © TAGIT Team

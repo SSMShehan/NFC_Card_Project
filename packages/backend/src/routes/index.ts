@@ -1,5 +1,5 @@
 // ============================================================
-//  NEXUS — API Router Index
+//  TAGIT — API Router Index
 //  Mounts all sub-routers under /api/v1
 // ============================================================
 
@@ -22,7 +22,7 @@ apiRouter.use('/links', linkRouter);
 /** API version info */
 apiRouter.get('/', (_req, res) => {
   res.json({
-    name: 'NEXUS API',
+    name: 'TAGIT API',
     version: '1.0.0',
     endpoints: {
       auth: '/api/v1/auth',

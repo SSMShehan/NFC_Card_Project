@@ -1,5 +1,5 @@
 // ============================================================
-//  NEXUS Mobile — Dashboard Home Screen
+//  TAGIT Mobile — Dashboard Home Screen
 //  Tab 1: Analytics overview + Stealth Mode quick toggle
 // ============================================================
 
@@ -43,7 +43,7 @@ export default function DashboardScreen() {
               Welcome back{profile?.displayName ? ',' : ''}
             </Text>
             <Text style={styles.username}>
-              {isLoading ? '...' : (profile?.displayName ?? 'NEXUS User')} ✦
+              {isLoading ? '...' : (profile?.displayName ?? 'TAGIT User')} ✦
             </Text>
           </View>
 

@@ -1,5 +1,5 @@
 // ============================================================
-//  NEXUS — Prisma Seed Script
+//  TAGIT — Prisma Seed Script
 //  Run: npm run db:seed (from packages/backend)
 //  Creates a demo user + profile + links for local development.
 // ============================================================
@@ -10,7 +10,7 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main(): Promise<void> {
-  console.log('🌱 Seeding NEXUS database...');
+  console.log('🌱 Seeding TAGIT database...');
 
   // ── Cleanup previous seed data ──────────────────────────────
   await prisma.verificationRequest.deleteMany();
@@ -19,11 +19,11 @@ async function main(): Promise<void> {
   await prisma.user.deleteMany();
 
   // ── Create demo user ────────────────────────────────────────
-  const passwordHash = await bcrypt.hash('nexus-demo-2024', 12);
+  const passwordHash = await bcrypt.hash('tagit-demo-2024', 12);
 
   const user = await prisma.user.create({
     data: {
-      email: 'demo@nexus.cards',
+      email: 'demo@tagit.cards',
       passwordHash,
       subscriptionTier: "PREMIUM",
       profile: {
@@ -32,8 +32,8 @@ async function main(): Promise<void> {
           displayName: 'Alex Morgan',
           bio: 'Product Designer & Creative Director. Crafting digital experiences that leave a mark.',
           phone: '+1 (555) 012-3456',
-          email: 'alex@nexus.cards',
-          company: 'NEXUS Creative Studio',
+          email: 'alex@tagit.cards',
+          company: 'TAGIT Creative Studio',
           jobTitle: 'Creative Director',
           website: 'https://alexmorgan.design',
           profilePicture: null, // Will be set after image upload in production

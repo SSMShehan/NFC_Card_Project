@@ -4,7 +4,7 @@
 
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Home, SmartphoneNfc } from 'lucide-react';
+import { Home, Smartphone } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Profile Not Found | TAGIT',
@@ -24,10 +24,10 @@ export default function NotFound() {
           <span className="gradient-text text-4xl font-black">404</span>
         </div>
 
-        <div>
-          <h1 className="text-xl font-bold text-white/90 mb-2">Card Not Found</h1>
-          <p className="text-slate-400 max-w-sm mx-auto text-lg">
-            We couldn&apos;t find a TAGIT card at this address. It may have been removed or the link might be incorrect.
+        <div className="flex flex-col gap-2">
+          <h1 className="text-2xl font-black tracking-tight text-white">Card Not Found</h1>
+          <p className="text-sm text-slate-400 leading-relaxed">
+            This NFC digital business card link is either invalid, inactive, or has been deleted by the owner.
           </p>
         </div>
 
@@ -41,7 +41,7 @@ export default function NotFound() {
 
         <div className="pt-4 border-t border-white/10 w-full flex flex-col items-center gap-2">
           <div className="flex items-center gap-2">
-            <SmartphoneNfc className="w-5 h-5 text-slate-500" />
+            <Smartphone className="w-5 h-5 text-slate-500" />
             <span className="gradient-text text-lg font-black tracking-wider">TAGIT</span>
           </div>
         </div>
