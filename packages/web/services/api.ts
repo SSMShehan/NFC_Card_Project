@@ -123,4 +123,72 @@ export async function appleLoginApi(identityToken: string, user?: any) {
   return response.data;
 }
 
+// ── Admin Suite API Methods ───────────────────────────────────
+
+export async function getAdminAnalytics() {
+  const response = await apiClient.get<ApiResponse<any>>('/admin/analytics');
+  return response.data;
+}
+
+export async function getAdminInventory() {
+  const response = await apiClient.get<ApiResponse<any[]>>('/admin/inventory');
+  return response.data;
+}
+
+export async function upsertAdminProduct(data: any) {
+  const response = await apiClient.post<ApiResponse<any>>('/admin/inventory', data);
+  return response.data;
+}
+
+export async function deleteAdminProduct(id: string) {
+  const response = await apiClient.delete<ApiResponse<any>>(`/admin/inventory/${id}`);
+  return response.data;
+}
+
+export async function getAdminNfcCards() {
+  const response = await apiClient.get<ApiResponse<any[]>>('/admin/cards');
+  return response.data;
+}
+
+export async function createAdminNfcBatch(data: { batchNumber: string; productId: string; count: number; description?: string }) {
+  const response = await apiClient.post<ApiResponse<any>>('/admin/cards/batch', data);
+  return response.data;
+}
+
+export async function assignAdminNfcCard(data: { cardId?: string; uid?: string; userEmail?: string }) {
+  const response = await apiClient.post<ApiResponse<any>>('/admin/cards/assign', data);
+  return response.data;
+}
+
+export async function getAdminOrders(status?: string) {
+  const url = status && status !== 'ALL' ? `/admin/orders?status=${status}` : '/admin/orders';
+  const response = await apiClient.get<ApiResponse<any[]>>(url);
+  return response.data;
+}
+
+export async function updateAdminOrder(id: string, data: { status?: string; trackingNumber?: string; courier?: string }) {
+  const response = await apiClient.patch<ApiResponse<any>>(`/admin/orders/${id}`, data);
+  return response.data;
+}
+
+export async function getAdminUsers() {
+  const response = await apiClient.get<ApiResponse<any[]>>('/admin/users');
+  return response.data;
+}
+
+export async function updateAdminUser(id: string, data: { role?: string; subscriptionTier?: string; profileStatus?: string }) {
+  const response = await apiClient.patch<ApiResponse<any>>(`/admin/users/${id}`, data);
+  return response.data;
+}
+
+export async function getAdminVerifications() {
+  const response = await apiClient.get<ApiResponse<any[]>>('/admin/verifications');
+  return response.data;
+}
+
+export async function moderateAdminVerification(id: string, data: { status: 'APPROVED' | 'REJECTED'; moderationNote?: string }) {
+  const response = await apiClient.patch<ApiResponse<any>>(`/admin/verifications/${id}`, data);
+  return response.data;
+}
+
 export { apiClient };

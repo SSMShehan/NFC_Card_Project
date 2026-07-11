@@ -18,10 +18,31 @@ datasource db {
 //  ENUMS
 // ============================================================
 
+enum UserRole {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
 enum SubscriptionTier {
   FREE
   PREMIUM
   CORPORATE
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  ENGRAVING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum NfcCardStatus {
+  UNASSIGNED
+  ASSIGNED
+  ACTIVATED
 }
 
 enum ProfileStatus {
@@ -66,14 +87,17 @@ enum LinkPlatform {
 model User {
   id               String           @id @default(cuid())
   email            String           @unique
-  passwordHash     String?          // Made optional for OAuth accounts
+  passwordHash     String? // Made optional for OAuth accounts
   googleId         String?          @unique // Google OAuth subject ID
   appleId          String?          @unique // Apple OAuth subject ID
   authProvider     String           @default("EMAIL") // EMAIL, GOOGLE, APPLE
+  role             UserRole         @default(USER)
   subscriptionTier SubscriptionTier @default(FREE)
 
   // Relations
-  profile Profile?
+  profile       Profile?
+  orders        Order[]
+  assignedCards NfcCardItem[]
 
   // Timestamps
   createdAt DateTime @default(now())
@@ -87,13 +111,13 @@ model User {
 model Profile {
   id             String        @id @default(cuid())
   username       String        @unique
-  displayName    String  
-  bio            String? 
-  phone          String? 
-  email          String? 
-  company        String? 
-  jobTitle       String? 
-  website        String? 
+  displayName    String
+  bio            String?
+  phone          String?
+  email          String?
+  company        String?
+  jobTitle       String?
+  website        String?
   profilePicture String? // URL to hosted image
   companyLogo    String? // URL to hosted company logo
   status         ProfileStatus @default(ACTIVE)
@@ -121,11 +145,11 @@ model Profile {
 model Link {
   id        String       @id @default(cuid())
   platform  LinkPlatform @default(CUSTOM)
-  url       String  
-  label     String  
+  url       String
+  label     String
   iconType  String? // Optional override for custom icon key
-  sortOrder Int     @default(0) // Controls display order
-  isActive  Boolean @default(true) // Toggled instantly via mobile app
+  sortOrder Int          @default(0) // Controls display order
+  isActive  Boolean      @default(true) // Toggled instantly via mobile app
 
   // Ownership — many:1 with Profile
   profileId String
@@ -143,8 +167,8 @@ model Link {
 /// that must be approved (by AI or manually) before going live.
 model VerificationRequest {
   id             String             @id @default(cuid())
-  fieldName      String             // e.g. "displayName", "profilePicture"
-  newValue       String             // The proposed new value (URL or text)
+  fieldName      String // e.g. "displayName", "profilePicture"
+  newValue       String // The proposed new value (URL or text)
   status         VerificationStatus @default(PENDING)
   moderationNote String? // AI confidence score or reviewer note
 
@@ -157,4 +181,121 @@ model VerificationRequest {
   reviewedAt  DateTime? // Set when status moves from PENDING to APPROVED/REJECTED
 
   @@map("verification_requests")
+}
+
+// ============================================================
+//  ADMIN & E-COMMERCE MODELS
+// ============================================================
+
+/// NFC Card / Digital Product inventory SKUs managed by Admin.
+model Product {
+  id                String  @id @default(cuid())
+  sku               String  @unique // e.g. "TAGIT-MATTE-BLK", "TAGIT-OBSIDIAN-MTL"
+  name              String
+  description       String?
+  category          String  @default("NFC_CARD") // NFC_CARD, ACCESSORY
+  price             Float
+  stockQuantity     Int     @default(100)
+  lowStockThreshold Int     @default(15)
+  nfcChipType       String  @default("NTAG215") // NTAG215, NTAG216
+  imageUrl          String?
+  isActive          Boolean @default(true)
+
+  // Relations
+  orderItems OrderItem[]
+  nfcCards   NfcCardItem[]
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("products")
+}
+
+/// Batch production run of physical NFC cards (created during card manufacturing/encoding).
+model NfcCardBatch {
+  id          String  @id @default(cuid())
+  batchNumber String  @unique // e.g. "BATCH-2026-07-A"
+  description String?
+  totalCards  Int     @default(0)
+  productId   String?
+
+  // Relations
+  cards NfcCardItem[]
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("nfc_card_batches")
+}
+
+/// Individual physical NFC Card with secure activation PIN code and hardware UID.
+model NfcCardItem {
+  id             String        @id @default(cuid())
+  uid            String        @unique // Physical hardware UID from NFC chip (e.g. 04:A2:3B:1C:89:D2:80)
+  serialNumber   String        @unique // Human readable serial printed on card/box (e.g. TG-8849201)
+  activationCode String // Secure 8-digit PIN printed under scratch-off (e.g. 8492-1049)
+  status         NfcCardStatus @default(UNASSIGNED)
+
+  // Relations
+  productId      String?
+  product        Product?      @relation(fields: [productId], references: [id], onDelete: SetNull)
+  batchId        String?
+  batch          NfcCardBatch? @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  assignedUserId String?
+  assignedUser   User?         @relation(fields: [assignedUserId], references: [id], onDelete: SetNull)
+
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  activatedAt DateTime?
+  updatedAt   DateTime  @updatedAt
+
+  @@map("nfc_card_items")
+}
+
+/// E-commerce Order placed by a customer.
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique // e.g. "ORD-994821"
+  customerEmail   String
+  customerName    String
+  shippingAddress String
+  phone           String?
+  status          OrderStatus @default(PENDING)
+  totalAmount     Float
+  trackingNumber  String?
+  courier         String? // e.g. "DHL", "FedEx", "Local Courier"
+  notes           String?
+
+  // Ownership — optional relation if placed by logged in user
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  // Relations
+  items OrderItem[]
+
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  shippedAt   DateTime?
+  deliveredAt DateTime?
+  updatedAt   DateTime  @updatedAt
+
+  @@map("orders")
+}
+
+/// Individual item line within an Order.
+model OrderItem {
+  id                  String  @id @default(cuid())
+  quantity            Int     @default(1)
+  unitPrice           Float
+  customEngravingText String? // Optional laser engraving on metal/wood cards
+
+  // Relations
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@map("order_items")
 }

@@ -1,6 +1,8 @@
 "use client";
 
-import { motion, Variants } from "framer-motion";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { motion, Variants, AnimatePresence } from "framer-motion";
 import { CheckCircle, Zap, Shield, SmartphoneNfc } from "lucide-react";
 import Image from "next/image";
 

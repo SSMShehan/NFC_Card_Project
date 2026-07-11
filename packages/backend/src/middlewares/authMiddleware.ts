@@ -41,6 +41,7 @@ export async function authMiddleware(
       select: {
         id: true,
         email: true,
+        role: true,
         subscriptionTier: true,
         profile: { select: { id: true } },
       },
@@ -51,16 +52,12 @@ export async function authMiddleware(
       return;
     }
 
-    if (!user.profile) {
-      sendError(res, 'No profile associated with this account.', 403);
-      return;
-    }
-
     // Attach typed user identity to the request
     req.user = {
       userId: user.id,
       email: user.email,
-      profileId: user.profile.id,
+      role: user.role,
+      profileId: user.profile?.id || '',
       subscriptionTier: user.subscriptionTier,
     };
 
