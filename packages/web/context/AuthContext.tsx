@@ -27,7 +27,6 @@ export interface Profile {
 export interface User {
   id: string;
   email: string;
-  role?: 'USER' | 'ADMIN';
   subscriptionTier: 'FREE' | 'PREMIUM' | 'CORPORATE';
   profile?: Profile | null;
 }
@@ -55,7 +54,6 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (credentials: LoginCredentials) => Promise<{ success: boolean; error?: string }>;
-  demoLogin: (role?: 'USER' | 'ADMIN') => Promise<{ success: boolean; error?: string }>;
   register: (payload: RegisterPayload) => Promise<{ success: boolean; error?: string }>;
   loginWithGoogle: (idToken: string) => Promise<{ success: boolean; error?: string }>;
   loginWithApple: (identityToken: string, user?: any) => Promise<{ success: boolean; error?: string }>;
@@ -114,27 +112,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         err?.response?.data?.message ||
         err?.message ||
         'Failed to connect to authentication server.';
-      return { success: false, error: errorMessage };
-    }
-  };
-
-  /** Instant Demo Role Login (Normal User or Admin) */
-  const demoLogin = async (role: 'USER' | 'ADMIN' = 'USER'): Promise<{ success: boolean; error?: string }> => {
-    try {
-      const res = await apiClient.post<ApiResponse<AuthResponse>>('/auth/demo-login', { role });
-      if (res.data.success && res.data.data) {
-        const { accessToken, refreshToken, user: userData } = res.data.data;
-        persistTokens(accessToken, refreshToken);
-        setUser(userData);
-        return { success: true };
-      }
-      return { success: false, error: res.data.error || res.data.message || 'Demo login failed.' };
-    } catch (err: any) {
-      const errorMessage =
-        err?.response?.data?.error ||
-        err?.response?.data?.message ||
-        err?.message ||
-        'Failed to connect to demo authentication service.';
       return { success: false, error: errorMessage };
     }
   };
@@ -232,7 +209,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isAuthenticated: !!user,
         isLoading,
         login,
-        demoLogin,
         register,
         loginWithGoogle,
         loginWithApple,

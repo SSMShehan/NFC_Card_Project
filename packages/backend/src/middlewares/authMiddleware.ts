@@ -41,7 +41,6 @@ export async function authMiddleware(
       select: {
         id: true,
         email: true,
-        role: true,
         subscriptionTier: true,
         profile: { select: { id: true } },
       },
@@ -62,7 +61,6 @@ export async function authMiddleware(
       userId: user.id,
       email: user.email,
       profileId: user.profile.id,
-      role: user.role || decoded.role || 'USER',
       subscriptionTier: user.subscriptionTier,
     };
 
@@ -77,20 +75,4 @@ export async function authMiddleware(
       sendError(res, 'Authentication failed due to an internal error.', 500);
     }
   }
-}
-
-/**
- * Middleware that ensures the authenticated user is an ADMIN.
- * Must be placed after `authMiddleware` in the route chain.
- */
-export function requireAdmin(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): void {
-  if (!req.user || req.user.role !== 'ADMIN') {
-    sendError(res, 'Administrator privileges required to access this resource.', 403);
-    return;
-  }
-  next();
 }

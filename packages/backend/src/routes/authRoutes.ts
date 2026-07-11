@@ -3,7 +3,7 @@
 // ============================================================
 
 import { Router } from 'express';
-import { register, login, refresh, me, googleAuth, appleAuth, demoLogin } from '../controllers/authController';
+import { register, login, refresh, me, googleAuth, appleAuth } from '../controllers/authController';
 import { authMiddleware } from '../middlewares/authMiddleware';
 
 export const authRouter = Router();
@@ -13,9 +13,6 @@ authRouter.post('/register', register);
 
 /** POST /api/v1/auth/login */
 authRouter.post('/login', login);
-
-/** POST /api/v1/auth/demo-login — Instant Demo Role Login */
-authRouter.post('/demo-login', demoLogin);
 
 /** POST /api/v1/auth/google — Social SSO */
 authRouter.post('/google', googleAuth);
