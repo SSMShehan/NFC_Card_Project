@@ -685,6 +685,13 @@ export default function ThreeDCardCustomizer() {
                             <span>{fc.label}</span>
                           </button>
                         ))}
+                        <label className={`relative py-3 px-2 rounded-[1.25rem] border flex flex-col items-center justify-center gap-2.5 text-[11px] text-center leading-tight font-bold transition-all group cursor-pointer ${foil.id === "custom" ? "border-neutral-900 ring-1 ring-neutral-900 bg-white text-neutral-900 shadow-md" : "border-neutral-900/10 bg-white/50 text-neutral-600 hover:border-neutral-900/30 hover:bg-white"}`}>
+                          <div className="w-7 h-7 rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] border border-black/10 group-hover:scale-110 transition-transform bg-gradient-to-tr from-rose-500 via-purple-500 to-blue-500 flex items-center justify-center">
+                            <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+                          </div>
+                          <span>Custom Color</span>
+                          <input type="color" className="absolute opacity-0 w-0 h-0" value={foil.value} onChange={(e) => setFoil({ id: "custom", label: "Custom", value: e.target.value, light: e.target.value })} />
+                        </label>
                       </div>
                     </div>
                     <div>
@@ -697,6 +704,13 @@ export default function ThreeDCardCustomizer() {
                             <div className="w-7 h-7 rounded-full shadow-[inset_0_2px_6px_rgba(0,0,0,0.3)] border border-white/20 group-hover:scale-110 transition-transform" style={{ backgroundColor: ac.value }}></div>{ac.label}
                           </button>
                         ))}
+                        <label className={`relative py-4 px-4 rounded-[1.25rem] border flex flex-col items-center justify-center gap-3 text-xs font-bold transition-all group cursor-pointer ${!currentAccents.some(ac => ac.value === accentColor) ? "border-neutral-900 ring-1 ring-neutral-900 bg-white text-neutral-900 shadow-md" : "border-neutral-900/10 bg-white/50 text-neutral-600 hover:border-neutral-900/30 hover:bg-white"}`}>
+                          <div className="w-7 h-7 rounded-full shadow-[inset_0_2px_6px_rgba(0,0,0,0.3)] border border-white/20 group-hover:scale-110 transition-transform bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500 flex items-center justify-center">
+                            <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+                          </div>
+                          <span>Custom Color</span>
+                          <input type="color" className="absolute opacity-0 w-0 h-0" value={accentColor} onChange={(e) => setAccentColor(e.target.value)} />
+                        </label>
                       </div>
                     </div>
                   </motion.div>
@@ -716,6 +730,13 @@ export default function ThreeDCardCustomizer() {
                             <span>{bgC.label}</span>
                           </button>
                         ))}
+                        <label className={`relative py-3 px-2 rounded-[1.25rem] border flex flex-col items-center justify-center gap-2.5 text-[11px] text-center leading-tight font-bold transition-all group cursor-pointer ${!PVC_BACKGROUND_COLORS.some(bgC => bgC.value === bgColor) && !bgImage ? "border-neutral-900 ring-1 ring-neutral-900 bg-white text-neutral-900 shadow-md" : "border-neutral-900/10 bg-white/50 text-neutral-600 hover:border-neutral-900/30 hover:bg-white"}`}>
+                          <div className="w-7 h-7 rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] border border-black/10 group-hover:scale-110 transition-transform bg-gradient-to-tr from-emerald-500 via-teal-500 to-cyan-500 flex items-center justify-center">
+                            <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+                          </div>
+                          <span>Custom Color</span>
+                          <input type="color" className="absolute opacity-0 w-0 h-0" value={bgColor} onChange={(e) => { setBgColor(e.target.value); setBgImage(null); }} />
+                        </label>
                       </div>
                     </div>
                     <div>
