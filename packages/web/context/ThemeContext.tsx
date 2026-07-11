@@ -25,15 +25,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setMounted(true);
     const saved = localStorage.getItem("tagit_theme") as ThemeMode;
-    if (saved === "dark" || saved === "light") {
-      setThemeState(saved);
-      if (saved === "dark") {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
+    if (saved === "dark") {
+      setThemeState("dark");
+      document.documentElement.classList.add("dark");
     } else {
-      // Default to light
+      // Strictly default to Light Mode
+      setThemeState("light");
+      localStorage.setItem("tagit_theme", "light");
       document.documentElement.classList.remove("dark");
     }
   }, []);

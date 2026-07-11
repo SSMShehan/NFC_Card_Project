@@ -20,11 +20,13 @@ export const AdminThemeProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    // Optional: Load saved theme from localStorage
     try {
       const saved = localStorage.getItem("tagit_admin_theme") as "light" | "dark";
-      if (saved === "light" || saved === "dark") {
-        setTheme(saved);
+      if (saved === "dark") {
+        setTheme("dark");
+      } else {
+        setTheme("light");
+        localStorage.setItem("tagit_admin_theme", "light");
       }
     } catch {
       // ignore storage errors
