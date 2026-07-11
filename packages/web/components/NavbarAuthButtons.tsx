@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { User as UserIcon, LogOut, ExternalLink, ChevronDown, Sparkles, Settings } from "lucide-react";
+import { User as UserIcon, LogOut, ChevronDown, Sparkles } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 export function NavbarAuthButtons() {
@@ -19,7 +19,6 @@ export function NavbarAuthButtons() {
   }
 
   if (isAuthenticated && user) {
-    const profileSlug = user.profile?.username;
     const displayName = user.profile?.displayName || user.email.split("@")[0];
 
     return (
@@ -64,17 +63,6 @@ export function NavbarAuthButtons() {
                   Admin Dashboard
                 </Link>
               )}
-              {profileSlug && (
-                <Link
-                  href={`/p/${profileSlug}`}
-                  target="_blank"
-                  onClick={() => setDropdownOpen(false)}
-                  className="flex items-center gap-2.5 px-4 py-2 text-sm hover:bg-neutral-50 hover:text-rose-600 transition-colors"
-                >
-                  <ExternalLink className="w-4 h-4 text-neutral-400" />
-                  View Public NFC Card
-                </Link>
-              )}
               <Link
                 href="/profile"
                 onClick={() => setDropdownOpen(false)}
@@ -82,22 +70,6 @@ export function NavbarAuthButtons() {
               >
                 <UserIcon className="w-4 h-4 text-neutral-500" />
                 User Profile & Account
-              </Link>
-              <Link
-                href="/customize"
-                onClick={() => setDropdownOpen(false)}
-                className="flex items-center gap-2.5 px-4 py-2 text-sm hover:bg-neutral-50 hover:text-rose-600 transition-colors"
-              >
-                <Sparkles className="w-4 h-4 text-neutral-400" />
-                Customize NFC Card
-              </Link>
-              <Link
-                href="/products"
-                onClick={() => setDropdownOpen(false)}
-                className="flex items-center gap-2.5 px-4 py-2 text-sm hover:bg-neutral-50 hover:text-rose-600 transition-colors"
-              >
-                <UserIcon className="w-4 h-4 text-neutral-400" />
-                Manage NFC Cards
               </Link>
             </div>
 
