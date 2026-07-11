@@ -31,9 +31,8 @@ router.patch('/orders/:id', adminController.updateOrderStatus);
 
 // 5. Customer CRM & Role Management
 router.get('/users', adminController.getUsers);
-router.post('/users', adminController.createUserAccount);
+router.post('/users', adminController.createAdminUser);
 router.patch('/users/:id', adminController.updateUserRoleTier);
-router.patch('/users/:id/profile', adminController.updateUserProfile);
 
 // 6. Profile Moderation Queue
 router.get('/verifications', adminController.getVerifications);

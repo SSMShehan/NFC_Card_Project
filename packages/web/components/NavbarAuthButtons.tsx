@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { User as UserIcon, LogOut, ExternalLink, ChevronDown, Sparkles } from "lucide-react";
+import { User as UserIcon, LogOut, ExternalLink, ChevronDown, Sparkles, Settings } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 export function NavbarAuthButtons() {
@@ -80,8 +80,8 @@ export function NavbarAuthButtons() {
                 onClick={() => setDropdownOpen(false)}
                 className="flex items-center gap-2.5 px-4 py-2 text-sm hover:bg-neutral-50 hover:text-rose-600 transition-colors"
               >
-                <span className="text-neutral-400">🎨</span>
-                Customize Profile
+                <Settings className="w-4 h-4 text-neutral-400" />
+                Edit User Profile
               </Link>
               <Link
                 href="/products"

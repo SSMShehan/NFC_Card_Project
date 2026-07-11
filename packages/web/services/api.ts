@@ -181,13 +181,8 @@ export async function updateAdminUser(id: string, data: { role?: string; subscri
   return response.data;
 }
 
-export async function createUserAccount(data: any) {
+export async function createAdminUser(data: any) {
   const response = await apiClient.post<ApiResponse<any>>('/admin/users', data);
-  return response.data;
-}
-
-export async function updateAdminUserProfile(id: string, data: any) {
-  const response = await apiClient.patch<ApiResponse<any>>(`/admin/users/${id}/profile`, data);
   return response.data;
 }
 

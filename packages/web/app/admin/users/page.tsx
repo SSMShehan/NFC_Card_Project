@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { getAdminUsers, updateAdminUser, createUserAccount, updateAdminUserProfile } from '../../../services/api';
+import { getAdminUsers, updateAdminUser, createAdminUser } from '../../../services/api';
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<any[]>([]);
@@ -10,7 +10,7 @@ export default function AdminUsersPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-  // User/Admin creation states
+  // New Admin creation states
   const [modalOpen, setModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -19,22 +19,6 @@ export default function AdminUsersPage() {
     password: '',
     username: '',
     displayName: '',
-    role: 'USER', // Default to USER role
-  });
-
-  // User Profile Editing states
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [editingUserId, setEditingUserId] = useState<string | null>(null);
-  const [editSubmitting, setEditSubmitting] = useState(false);
-  const [editErrorMsg, setEditErrorMsg] = useState<string | null>(null);
-  const [editFormData, setEditFormData] = useState({
-    displayName: '',
-    username: '',
-    bio: '',
-    phone: '',
-    company: '',
-    jobTitle: '',
-    website: '',
   });
 
   useEffect(() => {
@@ -95,58 +79,23 @@ export default function AdminUsersPage() {
     }
   };
 
-  const handleCreateAccount = async (e: React.FormEvent) => {
+  const handleCreateAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     setErrorMsg(null);
     try {
-      const res = await createUserAccount(formData);
+      const res = await createAdminUser(formData);
       if (res.success) {
         setModalOpen(false);
-        setFormData({ email: '', password: '', username: '', displayName: '', role: 'USER' });
+        setFormData({ email: '', password: '', username: '', displayName: '' });
         fetchUsers();
       } else {
-        setErrorMsg(res.error || res.message || 'Failed to create user account.');
+        setErrorMsg(res.error || res.message || 'Failed to create admin.');
       }
     } catch (err: any) {
-      setErrorMsg(err?.response?.data?.error || 'Failed to create user account.');
+      setErrorMsg(err?.response?.data?.error || 'Failed to create admin.');
     } finally {
       setSubmitting(false);
-    }
-  };
-
-  const handleOpenEditModal = (userItem: any) => {
-    setEditingUserId(userItem.id);
-    setEditFormData({
-      displayName: userItem.profile?.displayName || '',
-      username: userItem.profile?.username || '',
-      bio: userItem.profile?.bio || '',
-      phone: userItem.profile?.phone || '',
-      company: userItem.profile?.company || '',
-      jobTitle: userItem.profile?.jobTitle || '',
-      website: userItem.profile?.website || '',
-    });
-    setEditErrorMsg(null);
-    setEditModalOpen(true);
-  };
-
-  const handleEditProfileSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingUserId) return;
-    setEditSubmitting(true);
-    setEditErrorMsg(null);
-    try {
-      const res = await updateAdminUserProfile(editingUserId, editFormData);
-      if (res.success) {
-        setEditModalOpen(false);
-        fetchUsers();
-      } else {
-        setEditErrorMsg(res.error || res.message || 'Failed to update profile.');
-      }
-    } catch (err: any) {
-      setEditErrorMsg(err?.response?.data?.error || 'Failed to update profile.');
-    } finally {
-      setEditSubmitting(false);
     }
   };
 
@@ -305,13 +254,7 @@ export default function AdminUsersPage() {
                         )}
                       </td>
 
-                      <td className="py-4 px-4 text-right space-x-2">
-                        <button
-                          onClick={() => handleOpenEditModal(u)}
-                          className="px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-xs font-medium text-amber-400 border border-amber-500/20 transition-all inline-block"
-                        >
-                          Edit Profile
-                        </button>
+                      <td className="py-4 px-4 text-right">
                         {u.profile && (
                           <Link
                             href={`/p/${u.profile.username}`}
@@ -331,12 +274,12 @@ export default function AdminUsersPage() {
         )}
       </div>
 
-      {/* ── Add User/Admin Account Modal ───────────────────────── */}
+      {/* ── Add Admin User Modal ─────────────────────────────── */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
           <div className="bg-[#14141F] border border-white/10 rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl shadow-black">
             <div className="flex items-center justify-between pb-4 border-b border-white/10">
-              <h3 className="text-lg font-bold text-white">Add New User Account</h3>
+              <h3 className="text-lg font-bold text-white">Add New Admin User</h3>
               <button
                 onClick={() => setModalOpen(false)}
                 className="text-neutral-400 hover:text-white p-1"
@@ -351,30 +294,17 @@ export default function AdminUsersPage() {
               </div>
             )}
 
-            <form onSubmit={handleCreateAccount} className="space-y-4 mt-5">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-mono uppercase text-neutral-400 mb-1.5">Email Address</label>
-                  <input
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="alex@tagit.com"
-                    className="w-full bg-[#0B0B11] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-amber-500 outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-mono uppercase text-neutral-400 mb-1.5">Account Role</label>
-                  <select
-                    value={formData.role}
-                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                    className="w-full bg-[#0B0B11] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white font-mono focus:border-amber-500 outline-none"
-                  >
-                    <option value="USER">USER (Customer)</option>
-                    <option value="ADMIN">ADMIN (Manager)</option>
-                  </select>
-                </div>
+            <form onSubmit={handleCreateAdmin} className="space-y-4 mt-5">
+              <div>
+                <label className="block text-xs font-mono uppercase text-neutral-400 mb-1.5">Email Address</label>
+                <input
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="admin.alex@tagit.com"
+                  className="w-full bg-[#0B0B11] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-amber-500 outline-none"
+                />
               </div>
 
               <div>
@@ -396,7 +326,7 @@ export default function AdminUsersPage() {
                   required
                   value={formData.username}
                   onChange={(e) => setFormData({ ...formData, username: e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '') })}
-                  placeholder="alex_mercer"
+                  placeholder="alex_admin"
                   className="w-full bg-[#0B0B11] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white font-mono focus:border-amber-500 outline-none"
                 />
               </div>
@@ -408,7 +338,7 @@ export default function AdminUsersPage() {
                   required
                   value={formData.displayName}
                   onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
-                  placeholder="Alex Mercer"
+                  placeholder="Alex Mercer (Operations)"
                   className="w-full bg-[#0B0B11] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-amber-500 outline-none"
                 />
               </div>
@@ -426,131 +356,7 @@ export default function AdminUsersPage() {
                   disabled={submitting}
                   className="px-6 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 text-black font-bold text-xs shadow-lg shadow-amber-500/20 disabled:opacity-50"
                 >
-                  {submitting ? 'Creating...' : 'Create Account'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ── Edit User Profile Modal ────────────────────────────── */}
-      {editModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="bg-[#14141F] border border-white/10 rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl shadow-black overflow-y-auto max-h-[90vh]">
-            <div className="flex items-center justify-between pb-4 border-b border-white/10">
-              <h3 className="text-lg font-bold text-white">Edit User Profile Details</h3>
-              <button
-                onClick={() => setEditModalOpen(false)}
-                className="text-neutral-400 hover:text-white p-1"
-              >
-                ✕
-              </button>
-            </div>
-
-            {editErrorMsg && (
-              <div className="mt-4 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-mono">
-                ⚠️ {editErrorMsg}
-              </div>
-            )}
-
-            <form onSubmit={handleEditProfileSubmit} className="space-y-4 mt-5">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-mono uppercase text-neutral-400 mb-1.5">Display Name</label>
-                  <input
-                    type="text"
-                    required
-                    value={editFormData.displayName}
-                    onChange={(e) => setEditFormData({ ...editFormData, displayName: e.target.value })}
-                    placeholder="Alex Mercer"
-                    className="w-full bg-[#0B0B11] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-amber-500 outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-mono uppercase text-neutral-400 mb-1.5">Username Handle</label>
-                  <input
-                    type="text"
-                    required
-                    value={editFormData.username}
-                    onChange={(e) => setEditFormData({ ...editFormData, username: e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '') })}
-                    placeholder="alex_mercer"
-                    className="w-full bg-[#0B0B11] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white font-mono focus:border-amber-500 outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-mono uppercase text-neutral-400 mb-1.5">Phone Number</label>
-                  <input
-                    type="text"
-                    value={editFormData.phone}
-                    onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
-                    placeholder="+1 (555) 0199"
-                    className="w-full bg-[#0B0B11] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-amber-500 outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-mono uppercase text-neutral-400 mb-1.5">Website URL</label>
-                  <input
-                    type="text"
-                    value={editFormData.website}
-                    onChange={(e) => setEditFormData({ ...editFormData, website: e.target.value })}
-                    placeholder="https://alexmercer.dev"
-                    className="w-full bg-[#0B0B11] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-amber-500 outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-mono uppercase text-neutral-400 mb-1.5">Company Name</label>
-                  <input
-                    type="text"
-                    value={editFormData.company}
-                    onChange={(e) => setEditFormData({ ...editFormData, company: e.target.value })}
-                    placeholder="Enterprise Corp"
-                    className="w-full bg-[#0B0B11] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-amber-500 outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-mono uppercase text-neutral-400 mb-1.5">Job Title</label>
-                  <input
-                    type="text"
-                    value={editFormData.jobTitle}
-                    onChange={(e) => setEditFormData({ ...editFormData, jobTitle: e.target.value })}
-                    placeholder="Senior Product Executive"
-                    className="w-full bg-[#0B0B11] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-amber-500 outline-none"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-mono uppercase text-neutral-400 mb-1.5">Professional Bio</label>
-                <textarea
-                  rows={3}
-                  value={editFormData.bio}
-                  onChange={(e) => setEditFormData({ ...editFormData, bio: e.target.value })}
-                  placeholder="Tell us about yourself..."
-                  className="w-full bg-[#0B0B11] border border-white/10 rounded-xl px-3.5 py-2 text-sm text-white focus:border-amber-500 outline-none resize-none"
-                />
-              </div>
-
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-white/10">
-                <button
-                  type="button"
-                  onClick={() => setEditModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-medium text-neutral-300 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={editSubmitting}
-                  className="px-6 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 text-black font-bold text-xs shadow-lg shadow-amber-500/20 disabled:opacity-50"
-                >
-                  {editSubmitting ? 'Saving...' : 'Save Profile Changes'}
+                  {submitting ? 'Creating...' : 'Create Admin Account'}
                 </button>
               </div>
             </form>
