@@ -1,17 +1,50 @@
 import { Request, Response } from "express";
 import { PrismaClient, DesignStatus } from "@prisma/client";
+import { createClient } from "@supabase/supabase-js";
+import { v4 as uuidv4 } from "uuid";
+import path from "path";
 
 const prisma = new PrismaClient();
 
+const supabaseUrl = process.env.SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const supabase = createClient(supabaseUrl, supabaseKey);
+
 export const createDesign = async (req: Request, res: Response) => {
   try {
-    const { status, config } = req.body;
+    const { status, config: configStr } = req.body;
+    const config = typeof configStr === "string" ? JSON.parse(configStr) : configStr;
     
     // Determine expiration date if it's for the cart (3 days)
     let expiresAt: Date | null = null;
     if (status === "CART") {
       expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + 3);
+    }
+
+    let bgImageUrl = config.bgImage;
+
+    // Handle Image Upload if file exists
+    if (req.file) {
+      const fileExt = path.extname(req.file.originalname);
+      const fileName = `${uuidv4()}${fileExt}`;
+      const { data, error } = await supabase.storage
+        .from("card_designs")
+        .upload(fileName, req.file.buffer, {
+          contentType: req.file.mimetype,
+          upsert: true,
+        });
+
+      if (error) {
+        throw new Error(`Supabase upload failed: ${error.message}`);
+      }
+
+      // Get public URL
+      const { data: publicUrlData } = supabase.storage
+        .from("card_designs")
+        .getPublicUrl(fileName);
+
+      bgImageUrl = publicUrlData.publicUrl;
     }
 
     const design = await prisma.cardDesign.create({
@@ -25,7 +58,7 @@ export const createDesign = async (req: Request, res: Response) => {
         foilLabel: config.foilLabel,
         accentColor: config.accentColor,
         bgColor: config.bgColor,
-        bgImage: config.bgImage,
+        bgImage: bgImageUrl,
         displayName: config.displayName,
         designation: config.designation,
         email: config.email,

@@ -218,12 +218,14 @@ export default function ThreeDCardCustomizer() {
   const [foil, setFoil] = useState(currentFoils[0]);
   const [accentColor, setAccentColor] = useState(currentAccents[0].value);
   const [bgImage, setBgImage] = useState<string | null>(null);
+  const [bgImageFile, setBgImageFile] = useState<File | null>(null);
   const [bgColor, setBgColor] = useState(PVC_BACKGROUND_COLORS[0].value);
   const [overlayOpacity, setOverlayOpacity] = useState(50);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setBgImageFile(file);
       const url = URL.createObjectURL(file);
       setBgImage(url);
     }
@@ -264,7 +266,7 @@ export default function ThreeDCardCustomizer() {
         foilLabel: foil.label,
         accentColor,
         bgColor,
-        bgImage,
+        bgImage, // this will be updated by the backend if a file is uploaded
         displayName,
         designation,
         email,
@@ -273,10 +275,16 @@ export default function ThreeDCardCustomizer() {
         fontStyle: fontStyle.label,
       };
 
+      const formData = new FormData();
+      formData.append("status", status);
+      formData.append("config", JSON.stringify(cardConfig));
+      if (bgImageFile) {
+        formData.append("bgImageFile", bgImageFile);
+      }
+
       const res = await fetch("http://localhost:4000/api/v1/designs", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status, config: cardConfig }),
+        body: formData,
       });
 
       const data = await res.json();
