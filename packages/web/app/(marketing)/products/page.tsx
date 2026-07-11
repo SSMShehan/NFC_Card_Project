@@ -6,6 +6,7 @@ import { motion, Variants, AnimatePresence } from "framer-motion";
 import { CheckCircle, Zap, Shield, SmartphoneNfc, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { PremiumHeroGraphic } from "@/components/ThreeDCardCustomizer";
+import { useTheme } from "../../../context/ThemeContext";
 
 const staggerContainer: Variants = {
   hidden: { opacity: 0 },
@@ -50,6 +51,7 @@ const products = [
 export default function ProductsPage() {
   const router = useRouter();
   const [loadingProduct, setLoadingProduct] = useState<string | null>(null);
+  const { isLight } = useTheme();
 
   const handleCustomizeClick = (productName: string) => {
     setLoadingProduct(productName);
@@ -104,10 +106,10 @@ export default function ProductsPage() {
           animate="visible"
           variants={staggerContainer}
         >
-          <motion.h1 variants={fadeUpVariant} className="text-4xl md:text-6xl font-extrabold tracking-tight text-neutral-950 mb-6">
+          <motion.h1 variants={fadeUpVariant} className={`text-4xl md:text-6xl font-extrabold tracking-tight mb-6 transition-colors ${isLight ? "text-neutral-950" : "text-white"}`}>
             Cards designed to <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-orange-500">impress.</span>
           </motion.h1>
-          <motion.p variants={fadeUpVariant} className="text-lg text-neutral-500">
+          <motion.p variants={fadeUpVariant} className={`text-lg transition-colors ${isLight ? "text-neutral-500" : "text-neutral-400"}`}>
             Choose the TAGIT card that fits your style. Every card includes our powerful digital profile software for free, forever.
           </motion.p>
         </motion.div>
@@ -119,7 +121,11 @@ export default function ProductsPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.2, duration: 0.6 }}
-              className={`relative bg-white rounded-[2rem] p-8 border ${product.popular ? 'border-rose-500 shadow-2xl shadow-rose-100' : 'border-neutral-200 shadow-lg shadow-neutral-200'} flex flex-col`}
+              className={`relative rounded-[2rem] p-8 transition-all flex flex-col border ${
+                isLight
+                  ? product.popular ? 'bg-white border-rose-500 shadow-xl shadow-rose-100' : 'bg-white border-neutral-200 shadow-lg shadow-neutral-100'
+                  : product.popular ? 'bg-neutral-900/95 text-white border-rose-500/50 shadow-lg shadow-black/40' : 'bg-neutral-900/90 text-white border-neutral-800 shadow-md shadow-black/30'
+              }`}
             >
               {product.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-rose-500 to-orange-500 text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest shadow-md">
@@ -128,7 +134,7 @@ export default function ProductsPage() {
               )}
 
               {/* 3D Card Representation */}
-              <div className="w-full aspect-[1.58] mb-8 rounded-xl bg-gradient-to-br shadow-2xl overflow-hidden relative group perspective-1000">
+              <div className="w-full aspect-[1.58] mb-8 rounded-xl bg-gradient-to-br shadow-lg overflow-hidden relative group perspective-1000">
                 <motion.div
                   className={`w-full h-full bg-gradient-to-br ${product.color} p-6 flex flex-col justify-between`}
                   whileHover={{ rotateY: 10, rotateX: 5, scale: 1.05 }}
@@ -142,26 +148,32 @@ export default function ProductsPage() {
               </div>
 
               <div className="mb-6">
-                <h3 className="text-2xl font-bold text-neutral-950 mb-2">{product.name}</h3>
+                <h3 className={`text-2xl font-bold mb-2 ${isLight ? "text-neutral-950" : "text-white"}`}>{product.name}</h3>
                 <div className="flex items-baseline gap-1 mb-4">
-                  <span className="text-4xl font-extrabold text-neutral-950">{product.price}</span>
+                  <span className={`text-4xl font-extrabold ${isLight ? "text-neutral-950" : "text-white"}`}>{product.price}</span>
                   <span className="text-neutral-400">one-time</span>
                 </div>
-                <p className="text-neutral-500 text-sm leading-relaxed">{product.description}</p>
+                <p className={isLight ? "text-neutral-500 text-sm leading-relaxed" : "text-neutral-400 text-sm leading-relaxed"}>{product.description}</p>
               </div>
 
               <div className="space-y-3 mb-8 flex-1">
                 {product.features.map((feature, i) => (
                   <div key={i} className="flex items-center gap-3">
                     <CheckCircle className="w-5 h-5 text-rose-500 shrink-0" />
-                    <span className="text-neutral-600 text-sm font-medium">{feature}</span>
+                    <span className={isLight ? "text-neutral-600 text-sm font-medium" : "text-neutral-300 text-sm font-medium"}>{feature}</span>
                   </div>
                 ))}
               </div>
 
               <button
                 onClick={() => handleCustomizeClick(product.name)}
-                className={`w-full py-4 rounded-xl font-bold text-lg transition-all text-center flex items-center justify-center gap-2 ${product.popular ? 'bg-neutral-950 text-white hover:bg-neutral-900 hover:shadow-lg' : 'bg-neutral-100 text-neutral-950 hover:bg-slate-200'}`}
+                className={`w-full py-4 rounded-xl font-bold text-lg transition-all text-center flex items-center justify-center gap-2 ${
+                  product.popular
+                    ? 'bg-gradient-to-r from-rose-500 to-orange-500 text-white hover:shadow-md'
+                    : isLight
+                      ? 'bg-neutral-100 text-neutral-950 hover:bg-neutral-200'
+                      : 'bg-white/10 text-white hover:bg-white/20'
+                }`}
               >
                 Customize & Order
               </button>

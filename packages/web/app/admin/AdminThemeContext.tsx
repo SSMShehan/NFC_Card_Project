@@ -20,16 +20,34 @@ export const AdminThemeProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    // Optional: Load saved theme from localStorage
     try {
       const saved = localStorage.getItem("tagit_admin_theme") as "light" | "dark";
-      if (saved === "light" || saved === "dark") {
-        setTheme(saved);
+      if (saved === "dark") {
+        setTheme("dark");
+      } else {
+        setTheme("light");
+        localStorage.setItem("tagit_admin_theme", "light");
       }
     } catch {
       // ignore storage errors
     }
   }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (theme === "dark") {
+        document.documentElement.classList.add("dark");
+        document.documentElement.style.backgroundColor = "#08080a";
+        document.body.style.backgroundColor = "#08080a";
+        document.body.style.color = "#f5f5f5";
+      } else {
+        document.documentElement.classList.remove("dark");
+        document.documentElement.style.backgroundColor = "#ffffff";
+        document.body.style.backgroundColor = "#ffffff";
+        document.body.style.color = "#0a0a0a";
+      }
+    }
+  }, [theme]);
 
   const handleSetTheme = (newTheme: "light" | "dark") => {
     setTheme(newTheme);

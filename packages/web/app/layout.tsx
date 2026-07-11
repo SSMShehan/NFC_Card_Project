@@ -51,7 +51,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <script src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js" async defer />
       </head>
-      <body className="font-sans antialiased bg-white text-neutral-950">
+      <body className="font-sans antialiased transition-colors duration-300">
         <Providers>{children}</Providers>
       </body>
     </html>
