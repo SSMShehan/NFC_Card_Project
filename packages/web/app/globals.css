@@ -49,8 +49,8 @@ html {
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: var(--bg-base);
-  color: var(--text-primary);
+  background-color: #ffffff;
+  color: #0a0a0a;
   min-height: 100dvh;
   overflow-x: hidden;
 }

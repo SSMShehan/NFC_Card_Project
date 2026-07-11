@@ -14,9 +14,9 @@ export default function MarketingLayout({
       <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-rose-50 blur-[120px] -z-10 animate-pulse-slow" />
       <div className="absolute top-[20%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-orange-50 blur-[120px] -z-10 animate-float" />
 
-      {/* ── Ultra-Premium Floating Glassmorphic Navbar ── */}
-      <header className="fixed top-3 left-4 right-4 z-50 max-w-7xl mx-auto rounded-3xl bg-white/85 backdrop-blur-2xl border border-white/60 shadow-2xl shadow-neutral-900/5 transition-all">
-        <div className="px-6 h-20 flex items-center justify-between gap-4">
+      {/* ── Ultra-Premium Edge-to-Edge Glassmorphic Navbar ── */}
+      <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white/90 backdrop-blur-2xl border-b border-neutral-200/80 shadow-xs transition-all">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between gap-4">
           
           {/* 1. Brand Logo Emblem (Icon Eke Idan) */}
           <Link href="/" className="flex items-center gap-3 group shrink-0">
@@ -80,7 +80,7 @@ export default function MarketingLayout({
       </header>
 
       {/* Main Content */}
-      <div className="pt-28">
+      <div className="pt-20">
         {children}
       </div>
 
