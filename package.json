@@ -24,7 +24,18 @@
     "node": ">=20.0.0",
     "npm": ">=10.0.0"
   },
-  "keywords": ["nfc", "digital-business-card", "nexus"],
+  "keywords": [
+    "nfc",
+    "digital-business-card",
+    "nexus"
+  ],
   "author": "NEXUS Team",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@react-three/drei": "^9.122.0",
+    "@react-three/fiber": "^8.18.0",
+    "@react-three/postprocessing": "^3.0.4",
+    "@types/three": "^0.185.1",
+    "three": "^0.185.1"
+  }
 }
